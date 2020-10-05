@@ -1,0 +1,77 @@
+.todayWeather {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 47%;
+    margin: 0 auto;
+    text-align: center;
+    width: 700px;
+    height: 400px;
+    background-color: gray;
+}
+
+.todayWeather div {
+    font-size: 2.3rem;
+}
+
+.tNow, .todayWeather .tNow  {
+    font-size: 3.6rem;
+    justify-self: center;
+    margin: 0 0 1rem 0;
+}
+
+
+/*.weather {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 47%;
+    margin: 0 auto;
+    width: 700px;
+    height: 400px;
+}*/
+
+.sunCycle {
+    margin: 50px;
+    width: 600px;
+    height: 300px;
+    border: 2px solid yellow;
+    border-bottom: 0;
+    border-top-left-radius: 300px;
+    border-top-right-radius: 300px;
+}
+
+.sun img {
+    position: absolute;
+    height: 27px;
+    padding: 0;
+    margin: 0;
+}
+
+.sunrise img, .sunset img {
+    position: absolute;
+    bottom: 20px;
+    width: 27px;
+}
+
+.sunrise img {
+    left: 36px;
+}
+
+.sunset img {
+    right: 36px;
+}
+
+.sunriseTime, .sunsetTime {
+    position: absolute;
+    bottom: 20px;
+    font-size: 1.4rem;
+}
+
+.sunriseTime {
+    left: 70px;
+}
+
+.sunsetTime {
+    right: 70px;
+}
