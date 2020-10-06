@@ -4,7 +4,9 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.5.2",
+    "classnames": "^2.2.6",
     "cra-template": "1.0.3",
+    "proptypes": "^1.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3"
