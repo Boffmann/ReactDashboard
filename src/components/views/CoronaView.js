@@ -6,7 +6,42 @@ import CardHeader from '../Card/CardHeader'
 import CardBody from '../Card/CardBody'
 
 
-function CoronaView() {
+class CoronaView extends React.Component {
+  state = {
+    response: '',
+    post: '',
+    responseToPost: '',
+  };
+
+//   componentDidMount() {
+//     this.callApi()
+//       .then(res => this.setState({ response: res.express }))
+//       .catch(err => console.log(err));
+//   }
+
+  callApi = async () => {
+    const response = await fetch('/api/hello');
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+
+    return body;
+  }
+
+  handleSubmit = async e => {
+      e.preventDefault();
+      const response = await fetch('/api/world', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ post: this.state.post }),
+      });
+      const body = await response.text();
+
+      this.setState({ responseToPost: body })
+  }
+  
+  render() {
     return (
         <GridContainer>
           <GridItem xs={4}>
@@ -24,7 +59,7 @@ function CoronaView() {
           <GridItem xs={4}>
             <Card>
               <CardHeader>
-                This is 2
+                  Card 2
               </CardHeader>
               <CardBody>
                 Body 2
@@ -43,6 +78,7 @@ function CoronaView() {
           </GridItem>
         </GridContainer>
     );
+  }
 }
 
 export default CoronaView;

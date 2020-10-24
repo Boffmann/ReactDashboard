@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "axios": "^0.21.0",
     "bootstrap": "^4.5.2",
     "classnames": "^2.2.6",
     "cra-template": "1.0.3",
@@ -35,5 +36,6 @@
   },
   "devDependencies": {
     "ws": "3.3.2"
-  }
+  },
+  "proxy": "http://localhost:5000/"
 }
