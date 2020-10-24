@@ -1,4 +1,11 @@
+body {
+  background-color: #282828;
+}
+
 .App {
+  position: static;
+  display: flex;
+  flex-direction: column;
   text-align: center;
 }
 
