@@ -36,13 +36,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var model_1 = require("../model");
+var state_1 = require("../state");
 var axios_1 = require("axios");
+var url = require('url');
 var express = require('express');
 var router = express.Router();
 router.get('/cases', function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var states, response, apiData, _i, _a, feature, state;
+        var states, response, apiData, queryObject, regions_string, regions, _i, _a, feature, federation, state;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -51,15 +52,21 @@ router.get('/cases', function (req, res) {
                 case 1:
                     response = _b.sent();
                     apiData = response.data;
+                    queryObject = url.parse(req.url, true).query;
+                    regions_string = queryObject.region;
+                    regions = regions_string.split(" ");
                     for (_i = 0, _a = apiData.features; _i < _a.length; _i++) {
                         feature = _a[_i];
-                        state = new model_1["default"]();
-                        state.name = feature.attributes.LAN_ew_GEN;
-                        state.count = feature.attributes.Fallzahl;
-                        state.deaths = feature.attributes.Death;
-                        state.weekIncidence = feature.attributes.cases7_bl_per_100k;
-                        state.casesPer100k = feature.attributes.faelle_100000_EW;
-                        states.push(state);
+                        federation = feature.attributes.LAN_ew_GEN;
+                        if (regions.includes(federation)) {
+                            state = new state_1["default"]();
+                            state.name = feature.attributes.LAN_ew_GEN;
+                            state.count = feature.attributes.Fallzahl;
+                            state.deaths = feature.attributes.Death;
+                            state.weekIncidence = feature.attributes.cases7_bl_per_100k;
+                            state.casesPer100k = feature.attributes.faelle_100000_EW;
+                            states.push(state);
+                        }
                     }
                     res.json({ lastUpdate: apiData.features[0].attributes.Aktualisierung, states: states });
                     return [2 /*return*/];
