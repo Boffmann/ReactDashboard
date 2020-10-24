@@ -4,7 +4,7 @@ import NavButton from './NavButton'
 import "bootstrap/dist/css/bootstrap.css"
 
 
-function Navigation(props) {
+function Navigation() {
 
     return (
     <nav style={{backgroundColor: "#504945"}} className="navbar navbar-expand-lg is-dark-text">

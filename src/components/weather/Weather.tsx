@@ -1,6 +1,8 @@
 import React from 'react';
 
-const Weather = props => {
+interface WeatherProps {}
+
+const Weather = (props: WeatherProps) => {
 
     const sunrise = 1;
     const sunset = 10;

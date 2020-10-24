@@ -3,18 +3,25 @@ import styles from './index.module.css';
 import cx from 'classnames'
 import PropTypes from 'prop-types'
 
+interface PropTypes {
+    onClick?: Function;
+    children?: Node;
+    variant: string;
+    className: string;
+    label: string;
+    size: string;
+    disabledClassName: string;
+    disabled: boolean;
+}
+
 class NavButton extends React.Component {
 
-    static propTypes = {
-        onClick: PropTypes.func,
-        children: PropTypes.node,
-        variant: PropTypes.string,
-        className: PropTypes.string,
-        label: PropTypes.string,
-        size: PropTypes.string,
-        disabledClassName: PropTypes.string,
-        disabled: PropTypes.bool
-    };
+    props: PropTypes;
+
+    constructor(props: PropTypes) {
+        super(props);
+        this.props = props;
+    }
 
     static defaultProps = {
         className: "",
@@ -25,7 +32,7 @@ class NavButton extends React.Component {
         disabledClassName: ""
     };
 
-    handleButtonClick = event => {
+    handleButtonClick = (event: React.MouseEvent) => {
         const { onClick, disabled } = this.props;
 
         if (disabled) return;

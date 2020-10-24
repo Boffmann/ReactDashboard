@@ -1,30 +1,28 @@
 import React from 'react';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles'
 
-const styles = {
+interface CardHeaderProps {
+    className?: string;
+    children: any;
+};
+
+const useStyles = makeStyles({
     cardHeader: {
         position: "absolute",
         top: "0px",
         left: "0px",
         margin: "0.75rem",
-        // marginBottom: "0",
-        // borderBottom: "none",
-        // background: "transparent",
-        // zIndex: "3 !important",
     }
-};
+});
 
-const useStyles = makeStyles(styles);
-
-export default function CardHeader(props) {
+export default function CardHeader(props: CardHeaderProps) {
     const classes = useStyles();
     const { className, children, ...rest } = props;
     const cardHeaderClasses = classNames({
 
         [classes.cardHeader]: true,
-        [className]: className !== undefined
+        [className!]: className !== undefined && className !== null
 
     });
 
@@ -33,9 +31,4 @@ export default function CardHeader(props) {
             {children}
         </div>
     );
-}
-
-CardHeader.propTypes = {
-    className: PropTypes.string,
-    children: PropTypes.node
 }

@@ -8,6 +8,7 @@ TS_JS 	= $(TS_SRC:.ts=.js)
 
 all: $(TS_SRC)
 	$(TSC) $^
+	node server/server.js
 
 # $(TS_JS): %.js: %.ts js.stub
 # 	$(TSLINT) $<

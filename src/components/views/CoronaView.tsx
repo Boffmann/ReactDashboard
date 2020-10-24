@@ -27,7 +27,7 @@ class CoronaView extends React.Component {
     return body;
   }
 
-  handleSubmit = async e => {
+  handleSubmit = async (e: any) => {
       e.preventDefault();
       const response = await fetch('/api/world', {
           method: 'POST',

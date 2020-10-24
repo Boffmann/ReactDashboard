@@ -1,16 +1,11 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
-const styles = {
+/*const styles = {
 
     card: {
         // wordWrap: "break-word",
-        position: "relative",
-        background: "#689d6a",
-        margin: "20px",
-        height: "100px"
         // border: "0",
         // marginBottom: "30px",
         // marginTop: "30px",
@@ -27,18 +22,30 @@ const styles = {
         // fontSize: ".875rem"
     }
 
+}*/
+
+interface CardProps {
+    children: ReactNode;
+    className?: string;
 }
 
-const useStyles = makeStyles(styles);
+const useStyles = makeStyles({
+    card: {
+        position: "relative",
+        background: "#689d6a",
+        margin: "20px",
+        height: "100px"
+    }
+});
 
 
-export default function Card(props) {
+const Card: React.FC<CardProps> = props => {
     
     const classes = useStyles();
     const { className, children, ...rest} = props;
     const cardClasses = classNames({
         [classes.card]: true,
-        [className]: className !== undefined
+        [className!]: className !== undefined && className !== null
 
     });
 
@@ -49,7 +56,4 @@ export default function Card(props) {
     );
 }
 
-Card.propTypes = {
-    className: PropTypes.string,
-    children: PropTypes.node
-};
+export default Card;

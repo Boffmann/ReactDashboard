@@ -1,8 +1,20 @@
 import React from 'react';
+import { getNodeMajorVersion } from 'typescript';
+
+interface ClockState {
+    date: Date;
+}
+
+interface ClockProps {
+
+}
 
 class Clock extends React.Component {
+    state: ClockState;
+    // TODO Type is NodeJS.Timeout
+    timerID: any;
 
-    constructor(props) {
+    constructor(props: ClockProps) {
         super(props);
         this.state = {date: new Date()};
     }
