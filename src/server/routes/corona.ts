@@ -1,6 +1,7 @@
 import State from '../state'
 import axios from 'axios';
-import {Response, Request } from 'express'
+import { Response, Request } from 'express'
+import CoronaDB from '../../database/CoronaDB'
 const url = require('url')
 var express = require('express');
 var router = express.Router();
@@ -44,6 +45,9 @@ router.get('/cases', async function(req: Request, res: Response) {
             states.push(state);
         }
     }
+
+    const timestamp = apiData.features[0].attributes.Aktualisierung.toString();
+    CoronaDB.insertRowByTimeAndState(timestamp, states[0]);
 
     res.json({lastUpdate: apiData.features[0].attributes.Aktualisierung, states: states })
 })

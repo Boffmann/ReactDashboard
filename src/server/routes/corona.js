@@ -38,12 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var state_1 = require("../state");
 var axios_1 = require("axios");
+var CoronaDB_1 = require("../../database/CoronaDB");
 var url = require('url');
 var express = require('express');
 var router = express.Router();
 router.get('/cases', function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
-        var states, response, apiData, queryObject, regions_string, regions, _i, _a, feature, federation, state;
+        var states, response, apiData, queryObject, regions_string, regions, _i, _a, feature, federation, state, timestamp;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -68,6 +69,8 @@ router.get('/cases', function (req, res) {
                             states.push(state);
                         }
                     }
+                    timestamp = apiData.features[0].attributes.Aktualisierung.toString();
+                    CoronaDB_1["default"].insertRowByTimeAndState(timestamp, states[0]);
                     res.json({ lastUpdate: apiData.features[0].attributes.Aktualisierung, states: states });
                     return [2 /*return*/];
             }
