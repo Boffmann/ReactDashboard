@@ -10,9 +10,10 @@ interface CardBodyProps {
 const useStyles = makeStyles({
     cardBody: {
         position: "absolute",
-        top: "50%",
+        top: "40%",
         left: "0px",
         marginLeft: "1.75rem",
+        textAlign: "left",
     }
 });
 

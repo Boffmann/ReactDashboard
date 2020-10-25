@@ -11,6 +11,36 @@ var updateRowAtTimeAndStateQuery = 'UPDATE corona set cases = ?, weekIncidence =
 // Insert Queries
 var insertRowQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidence, casesPer100k, death) VALUES(?, ?, ?, ?, ?, ?)';
 // Get Functions
+var Private = {
+    insertState: function (timestamp, state) {
+        console.log("Inserting new Row into database");
+        DashboardDB_1["default"].getInstance().DBQuerySET(insertRowQuery, [
+            timestamp,
+            state.name,
+            state.count.toString(),
+            state.weekIncidence.toString(),
+            state.casesPer100k.toString(),
+            state.deaths.toString()
+        ])["catch"](function (err) {
+            console.log("Error updating Database");
+            console.error(err);
+        });
+    },
+    updateRow: function (timestamp, state) {
+        console.log("Updating Database");
+        DashboardDB_1["default"].getInstance().DBQuerySET(updateRowAtTimeAndStateQuery, [
+            state.count.toString(),
+            state.weekIncidence.toString(),
+            state.casesPer100k.toString(),
+            state.deaths.toString(),
+            timestamp,
+            state.name
+        ])["catch"](function (err) {
+            console.log("Error updating Database");
+            console.error(err);
+        });
+    }
+};
 var CoronaDB = {
     getRowByTimeAndState: function (timestamp, state) {
         return DashboardDB_1["default"].getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state]);
@@ -24,41 +54,16 @@ var CoronaDB = {
      * @param state  The state to insert/update
      */
     insertRowByTimeAndState: function (timestamp, state) {
-        // Check if row already in DB
-        // Check if a state was found:
         var stateFound = state !== undefined && state !== null;
         if (stateFound) {
-            //Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state.name], (rows: string[]) => {
             DashboardDB_1["default"].getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state.name])
                 .then(function (rows) {
                 if (rows.length !== 0) {
                     // Update
-                    console.log("Updating Database");
-                    DashboardDB_1["default"].getInstance().DBQuerySET(updateRowAtTimeAndStateQuery, [
-                        state.count.toString(),
-                        state.weekIncidence.toString(),
-                        state.casesPer100k.toString(),
-                        state.deaths.toString(),
-                        timestamp,
-                        state.name
-                    ])["catch"](function (err) {
-                        console.log("Error updating Database");
-                        console.error(err);
-                    });
+                    Private.updateRow(timestamp, state);
                 }
                 else {
-                    console.log("Inserting new Row into database");
-                    DashboardDB_1["default"].getInstance().DBQuerySET(insertRowQuery, [
-                        timestamp,
-                        state.name,
-                        state.count.toString(),
-                        state.weekIncidence.toString(),
-                        state.casesPer100k.toString(),
-                        state.deaths.toString()
-                    ])["catch"](function (err) {
-                        console.log("Error updating Database");
-                        console.error(err);
-                    });
+                    Private.insertState(timestamp, state);
                 }
             })["catch"](function (err) {
                 console.log("There was an error getting a row");
@@ -66,18 +71,7 @@ var CoronaDB = {
             });
         }
         else {
-            console.log("Inserting new Row into database");
-            DashboardDB_1["default"].getInstance().DBQuerySET(insertRowQuery, [
-                timestamp,
-                state.name,
-                state.count.toString(),
-                state.weekIncidence.toString(),
-                state.casesPer100k.toString(),
-                state.deaths.toString()
-            ])["catch"](function (err) {
-                console.log("Error updating Database");
-                console.error(err);
-            });
+            Private.insertState(timestamp, state);
         }
     }
 };

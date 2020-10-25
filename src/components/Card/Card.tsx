@@ -34,7 +34,7 @@ const useStyles = makeStyles({
         position: "relative",
         background: "#689d6a",
         margin: "20px",
-        height: "100px"
+        height: "180px"
     }
 });
 

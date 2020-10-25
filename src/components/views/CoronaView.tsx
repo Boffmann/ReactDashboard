@@ -4,47 +4,60 @@ import GridItem from '../Grid/GridItem'
 import Card from '../Card/Card'
 import CardHeader from '../Card/CardHeader'
 import CardBody from '../Card/CardBody'
-import { response } from 'express';
+import State from '../../server/state'
 
 
 class CoronaView extends React.Component {
   state = {
-    response: '',
-    post: '',
-    responseToPost: '',
+    NDS: new State(),
+    HH: new State()
   };
 
-//   componentDidMount() {
-//     this.callApi()
-//       .then(res => this.setState({ response: res.express }))
-//       .catch(err => console.log(err));
-//   }
+  private parseDataToState(data: any): State {
+      var newState = new State();
 
-  callApi = async () => {
-    const response = await fetch('/api/hello');
+      newState.name = data.states[0].name;
+      newState.count = data.states[0].count;
+      newState.difference = data.states[0].difference;
+      newState.weekDifference = data.states[0].weekDifference;
+      newState.weekIncidence = data.states[0].weekIncidence;
+      newState.casesPer100k = data.states[0].casesPer100k;
+      newState.deaths = data.states[0].deaths;
+
+      return newState;
+  }
+
+  private updateData() {
+    this.callApi("Niedersachsen")
+      .then(res => {
+
+        this.setState({NDS: this.parseDataToState(res)});
+
+      })
+      .catch(err => console.log(err));
+
+    this.callApi("Hamburg")
+      .then(res => {
+
+        this.setState({HH: this.parseDataToState(res)});
+
+      })
+      .catch(err => console.log(err));
+  }
+
+  componentDidMount() {
+    this.updateData();
+  }
+
+  callApi = async (regions: string) => {
+    const response = await fetch('/api/corona/cases?region='+regions);
     const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
 
     return body;
   }
 
   handleSubmit = async (e: any) => {
       e.preventDefault();
-      const response = await fetch('/api/corona/cases?region=Niedersachsen');
-      const data = await response.json();
-      this.setState({ casesNDS: data });
-
-      // const response = await fetch('/api/world', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({ post: this.state.post }),
-      // });
-      // const body = await response.text();
-
-      // this.setState({ responseToPost: body })
-
   }
   
   render() {
@@ -53,11 +66,14 @@ class CoronaView extends React.Component {
           <GridItem xs={4}>
             <Card>
               <CardHeader>
-                  Landkreis Leer
+                  <h4>{this.state.NDS.name}</h4>
               </CardHeader>
               <CardBody>
                   <ul>
-                    <li>Fälle gesamt: </li>
+                    <li>Fälle gesamt: {this.state.NDS.count} </li>
+                    <li>Wocheninzidenz: {this.state.NDS.weekIncidence} </li>
+                    <li>Fälle pro 100k: {this.state.NDS.casesPer100k} </li>
+                    <li>Tote: {this.state.NDS.deaths} </li>
                   </ul>
               </CardBody>
             </Card>
@@ -65,10 +81,15 @@ class CoronaView extends React.Component {
           <GridItem xs={4}>
             <Card>
               <CardHeader>
-                  Card 2
+                  <h4>{this.state.HH.name}</h4>
               </CardHeader>
               <CardBody>
-                Body 2
+                  <ul>
+                    <li>Fälle gesamt: {this.state.HH.count} </li>
+                    <li>Wocheninzidenz: {this.state.HH.weekIncidence} </li>
+                    <li>Fälle pro 100k: {this.state.HH.casesPer100k} </li>
+                    <li>Tote: {this.state.HH.deaths} </li>
+                  </ul>
               </CardBody>
             </Card>
           </GridItem>
