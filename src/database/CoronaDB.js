@@ -1,6 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
-var Database_1 = require("./Database");
+var Database_1 = __importDefault(require("./Database"));
 // Get Queries
 var getRowByTimeAndStateQuery = 'SELECT * FROM corona where timestamp = ? AND state = ?';
 // Update Queries

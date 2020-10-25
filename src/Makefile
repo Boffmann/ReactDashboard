@@ -7,7 +7,7 @@ TS_JS 	= $(TS_SRC:.ts=.js)
 .PHONY: all js.stub
 
 all: $(TS_SRC)
-	$(TSC) $^
+	$(TSC) --esModuleInterop $^
 	node server/server.js
 
 retouch:
