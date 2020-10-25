@@ -29,16 +29,17 @@ class CoronaView extends React.Component {
 
   handleSubmit = async (e: any) => {
       e.preventDefault();
-      const response = await fetch('/api/world', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ post: this.state.post }),
-      });
-      const body = await response.text();
+      // const response = await fetch('/api/world', {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify({ post: this.state.post }),
+      // });
+      // const body = await response.text();
 
-      this.setState({ responseToPost: body })
+      // this.setState({ responseToPost: body })
+
   }
   
   render() {
@@ -51,7 +52,7 @@ class CoronaView extends React.Component {
               </CardHeader>
               <CardBody>
                   <ul>
-                      <li>Fälle gesamt</li>
+                      <li>Fälle gesamt:</li>
                   </ul>
               </CardBody>
             </Card>

@@ -73,7 +73,7 @@ router.get('/cases', function (req, res) {
                         }
                     }
                     timestamp = apiData.features[0].attributes.Aktualisierung.toString();
-                    CoronaDB_1["default"].insertRowByTimeAndState(timestamp, states[0]);
+                    states.forEach(function (state) { return CoronaDB_1["default"].insertRowByTimeAndState(timestamp, state); });
                     res.json({ lastUpdate: apiData.features[0].attributes.Aktualisierung, states: states });
                     return [2 /*return*/];
             }
