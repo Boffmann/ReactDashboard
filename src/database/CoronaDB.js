@@ -12,11 +12,8 @@ var updateRowAtTimeAndStateQuery = 'UPDATE corona set cases = ?, weekIncidence =
 var insertRowQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidence, casesPer100k, death) VALUES(?, ?, ?, ?, ?, ?)';
 // Get Functions
 var CoronaDB = {
-    operateOnRowByTimeAndState: function (time, state, callback) {
-        var resultRows = [];
-        // Database.getInstance().openDB();
-        DashboardDB_1["default"].getInstance().DBQueryGET(getRowByTimeAndStateQuery, [time, state], callback);
-        // Database.getInstance().closeDB();
+    getRowByTimeAndState: function (timestamp, state) {
+        return DashboardDB_1["default"].getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state]);
     },
     // Insert Functions
     /**
@@ -27,51 +24,61 @@ var CoronaDB = {
      * @param state  The state to insert/update
      */
     insertRowByTimeAndState: function (timestamp, state) {
-        var success = false;
-        // Database.getInstance().openDB();
         // Check if row already in DB
         // Check if a state was found:
         var stateFound = state !== undefined && state !== null;
         if (stateFound) {
-            DashboardDB_1["default"].getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state.name], function (rows) {
+            //Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state.name], (rows: string[]) => {
+            DashboardDB_1["default"].getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state.name])
+                .then(function (rows) {
                 if (rows.length !== 0) {
                     // Update
                     console.log("Updating Database");
-                    success = DashboardDB_1["default"].getInstance().DBQuerySET(updateRowAtTimeAndStateQuery, [
+                    DashboardDB_1["default"].getInstance().DBQuerySET(updateRowAtTimeAndStateQuery, [
                         state.count.toString(),
                         state.weekIncidence.toString(),
                         state.casesPer100k.toString(),
                         state.deaths.toString(),
                         timestamp,
                         state.name
-                    ]);
+                    ])["catch"](function (err) {
+                        console.log("Error updating Database");
+                        console.error(err);
+                    });
                 }
                 else {
                     console.log("Inserting new Row into database");
-                    success = DashboardDB_1["default"].getInstance().DBQuerySET(insertRowQuery, [
+                    DashboardDB_1["default"].getInstance().DBQuerySET(insertRowQuery, [
                         timestamp,
                         state.name,
                         state.count.toString(),
                         state.weekIncidence.toString(),
                         state.casesPer100k.toString(),
                         state.deaths.toString()
-                    ]);
+                    ])["catch"](function (err) {
+                        console.log("Error updating Database");
+                        console.error(err);
+                    });
                 }
+            })["catch"](function (err) {
+                console.log("There was an error getting a row");
+                console.error(err);
             });
         }
         else {
             console.log("Inserting new Row into database");
-            success = DashboardDB_1["default"].getInstance().DBQuerySET(insertRowQuery, [
+            DashboardDB_1["default"].getInstance().DBQuerySET(insertRowQuery, [
                 timestamp,
                 state.name,
                 state.count.toString(),
                 state.weekIncidence.toString(),
                 state.casesPer100k.toString(),
                 state.deaths.toString()
-            ]);
+            ])["catch"](function (err) {
+                console.log("Error updating Database");
+                console.error(err);
+            });
         }
-        // Database.getInstance().closeDB();
-        return success;
     }
 };
 exports["default"] = CoronaDB;

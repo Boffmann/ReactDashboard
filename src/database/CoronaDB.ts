@@ -12,12 +12,45 @@ const insertRowQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidenc
 
 // Get Functions
 
+const Private = {
+
+    insertState (timestamp: string, state: State) {
+        console.log("Inserting new Row into database")
+        Database.getInstance().DBQuerySET(insertRowQuery, [
+                timestamp,
+                state.name,
+                state.count.toString(),
+                state.weekIncidence.toString(),
+                state.casesPer100k.toString(),
+                state.deaths.toString()
+        ])
+        .catch(err => {
+            console.log("Error updating Database");
+            console.error(err);
+        })
+    }, 
+
+    updateRow (timestamp: string, state: State) {
+        console.log("Updating Database")
+        Database.getInstance().DBQuerySET(updateRowAtTimeAndStateQuery, [
+            state.count.toString(),
+            state.weekIncidence.toString(),
+            state.casesPer100k.toString(),
+            state.deaths.toString(),
+            timestamp,
+            state.name
+        ])
+        .catch(err => {
+            console.log("Error updating Database");
+            console.error(err);
+        })
+    }
+};
+
 const CoronaDB = {
 
-    operateOnRowByTimeAndState(time: string, state: string, callback: (rows: string[]) => void): void {
-        var resultRows: string[] = []
-
-        Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [time, state], callback);
+    getRowByTimeAndState (timestamp: string, state: string): Promise<string[]> {
+        return Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state]);
     },
 
     // Insert Functions
@@ -30,53 +63,26 @@ const CoronaDB = {
      * @param state  The state to insert/update
      */
     insertRowByTimeAndState (timestamp: string, state: State) {
-        var success: boolean = false;
 
-        // Database.getInstance().openDB();
-        // Check if row already in DB
-        // Check if a state was found:
         const stateFound = state !== undefined && state !== null;
 
         if (stateFound) {
-            Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state.name], (rows: string[]) => {
-
-                if (rows.length !== 0) {
-                    // Update
-                    console.log("Updating Database")
-                    success = Database.getInstance().DBQuerySET(updateRowAtTimeAndStateQuery, [
-                        state.count.toString(),
-                        state.weekIncidence.toString(),
-                        state.casesPer100k.toString(),
-                        state.deaths.toString(),
-                        timestamp,
-                        state.name
-                    ]);
-                } else {
-                    console.log("Inserting new Row into database")
-                    success = Database.getInstance().DBQuerySET(insertRowQuery, [
-                            timestamp,
-                            state.name,
-                            state.count.toString(),
-                            state.weekIncidence.toString(),
-                            state.casesPer100k.toString(),
-                            state.deaths.toString()
-                ]);
-                }
-            });
+            Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state.name])
+                .then((rows: string[]) => {
+                    if (rows.length !== 0) {
+                        // Update
+                        Private.updateRow(timestamp, state);
+                    } else {
+                        Private.insertState(timestamp, state);
+                    }
+                })
+                .catch(err => {
+                    console.log("There was an error getting a row");
+                    console.error(err);
+                })
         } else {
-            console.log("Inserting new Row into database")
-            success = Database.getInstance().DBQuerySET(insertRowQuery, [
-                    timestamp,
-                    state.name,
-                    state.count.toString(),
-                    state.weekIncidence.toString(),
-                    state.casesPer100k.toString(),
-                    state.deaths.toString()
-        ]);
+            Private.insertState(timestamp, state);
         }
-
-        // Database.getInstance().closeDB();
-        return success;
     }
 
 }

@@ -4,6 +4,7 @@ import GridItem from '../Grid/GridItem'
 import Card from '../Card/Card'
 import CardHeader from '../Card/CardHeader'
 import CardBody from '../Card/CardBody'
+import { response } from 'express';
 
 
 class CoronaView extends React.Component {
@@ -29,6 +30,10 @@ class CoronaView extends React.Component {
 
   handleSubmit = async (e: any) => {
       e.preventDefault();
+      const response = await fetch('/api/corona/cases?region=Niedersachsen');
+      const data = await response.json();
+      this.setState({ casesNDS: data });
+
       // const response = await fetch('/api/world', {
       //     method: 'POST',
       //     headers: {
@@ -52,7 +57,7 @@ class CoronaView extends React.Component {
               </CardHeader>
               <CardBody>
                   <ul>
-                      <li>Fälle gesamt:</li>
+                    <li>Fälle gesamt: </li>
                   </ul>
               </CardBody>
             </Card>

@@ -1,3 +1,5 @@
+import { rejects } from "assert";
+import { promises } from "fs";
 import { Database } from "sqlite3";
 
 var sqlite3 = require('sqlite3').verbose();
@@ -19,18 +21,22 @@ class DashboardDB {
         return DashboardDB.instance;
     }
 
-    private openDB(callback: (db: Database) => void) {
-        var db = new sqlite3.Database(this.databaseFile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err: Error) => {
+    private openDB(): Promise<Database> {
+        var promise = new Promise<Database>((resolve, reject) => {
+            var db = new sqlite3.Database(this.databaseFile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err: Error) => {
 
-            if (err) {
-                console.error(err.message);
-            }
+                if (err) {
+                    reject(err.message);
+                }
 
-            console.log('Connected to the database');
+                console.log('Connected to the database');
 
-            callback(db);
+                resolve(db);
 
+            });
         });
+
+        return promise;
     }
 
     private closeDB(db: Database) {
@@ -42,77 +48,72 @@ class DashboardDB {
         });
     }
 
-    public DBQuerySET(query: string, args: string[], callback?: (success: boolean) => void) {
-        mutex.lock('key', (err: Error, unlock: any) => {
+    public DBQuerySET(query: string, args: string[]): Promise<void> {
+        var promise = new Promise<void>((resolve, reject) => {
+            mutex.lock('key', (err: Error, unlock: any) => {
                 if (err) {
                     console.error(err);
                     console.error("Unable to aquire lock");
                     unlock();
-                    if (callback) callback(false);
-                    return;
+                    reject();
                 }
 
-                this.openDB((db: Database) => {
-                    db.run(query, args, (err: Error) => {
-                        if (err) {
-                            console.error(err.message);
-                            console.error("Could not set table");
+                this.openDB()
+                    .then((db: Database) => {
+                        db.run(query, args, (err: Error) => {
+                            if (err) {
+                                console.error("Could not set table");
+                                unlock();
+                                this.closeDB(db);
+                                reject(err.message);
+                            }
                             unlock();
-                            if(callback) callback(false);
                             this.closeDB(db);
-                            return;
-                        }
-
-                        unlock();
-                        if (callback) callback(true);
-                        this.closeDB(db);
-                        return true;
-                    });
-                });
-                unlock();
+                            resolve();
+                        });
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    })
             });
-
-            return false;
-    }
-
-    public DBQueryGET(query: string, args: string[], callback: (rows: string[]) => void) {
-
-        console.log("Getting db Query");
-        
-        mutex.lock('key', (err: Error, unlock: any) => {
-            if (err) {
-                console.log("Error aquireing lock");
-                console.error(err);
-                console.error("Unable to aquire lock");
-                unlock();
-                callback([]);
-                return;
-            }
-
-            this.openDB((db: Database) => {
-                db.serialize(() => {
-                    db.all(query, args, (err: Error, rows: string[]) => {
-                        if (err) {
-                            console.log("An error occured during database get");
-                            console.error(err.message);
-                            unlock();
-                            callback([]);
-                            this.closeDB(db);
-                            return;
-                        }
-                        unlock();
-                        console.log("Success getting from database");
-                        callback(rows);
-                        this.closeDB(db);
-                        return [];
-                    });
-                });
-            });
-            unlock();
         });
+        return promise;
     }
-        
 
+    public DBQueryGET(query: string, args: string[]): Promise<string[]> {
+        var promise = new Promise<string[]>((resolve, reject) => {
+            mutex.lock('key', (err: Error, unlock: any) => {
+                if (err) {
+                    console.error(err);
+                    unlock();
+                    reject("Unable to aquire Lock");
+                }
+
+                this.openDB()
+                    .then((db: Database) => {
+                        db.serialize(() => {
+                            db.all(query, args, (err: Error, rows: string[]) => {
+                                if (err) {
+                                    console.log("An error occured during database get");
+                                    console.error(err.message);
+                                    unlock();
+                                    this.closeDB(db);
+                                    reject();
+                                }
+                                unlock();
+                                console.log("Success getting from database");
+                                this.closeDB(db);
+                                resolve(rows);
+                            });
+                        });
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    })
+            });
+        });
+        return promise;
+    }
 };
 
 export default DashboardDB;
