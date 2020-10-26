@@ -1,5 +1,3 @@
-import { rejects } from "assert";
-import { promises } from "fs";
 import { Database } from "sqlite3";
 
 var sqlite3 = require('sqlite3').verbose();
@@ -8,7 +6,7 @@ var mutex = require('node-mutex')();
 class DashboardDB {
 
     private static instance: DashboardDB;
-    private databaseFile = "./database/dashboard.db";
+    private databaseFile = "./src/backend/database/dashboard.db";
 
     private constructor() { };
 

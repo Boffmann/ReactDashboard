@@ -11,8 +11,7 @@ interface ClockProps {
 
 class Clock extends React.Component {
     state: ClockState;
-    // TODO Type is NodeJS.Timeout
-    timerID: any;
+    timerID?: NodeJS.Timeout;
 
     constructor(props: ClockProps) {
         super(props);
@@ -26,8 +25,10 @@ class Clock extends React.Component {
         );
     }
 
-    componentDidUnmount() {
-        clearInterval(this.timerID);
+    componentWillUnmount() {
+        if (this.timerID) {
+            clearInterval(this.timerID);
+        }
     }
 
     tick() {

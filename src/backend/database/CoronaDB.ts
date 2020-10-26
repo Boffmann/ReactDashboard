@@ -14,10 +14,10 @@ const insertRowQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidenc
 
 const Private = {
 
-    insertState (timestamp: string, state: State) {
+    insertState (state: State) {
         console.log("Inserting new Row into database")
         Database.getInstance().DBQuerySET(insertRowQuery, [
-                timestamp,
+                state.timestamp.toString(),
                 state.name,
                 state.count.toString(),
                 state.weekIncidence.toString(),
@@ -30,14 +30,14 @@ const Private = {
         })
     }, 
 
-    updateRow (timestamp: string, state: State) {
+    updateRow (state: State) {
         console.log("Updating Database")
         Database.getInstance().DBQuerySET(updateRowAtTimeAndStateQuery, [
             state.count.toString(),
             state.weekIncidence.toString(),
             state.casesPer100k.toString(),
             state.deaths.toString(),
-            timestamp,
+            state.timestamp.toString(),
             state.name
         ])
         .catch(err => {
@@ -59,21 +59,20 @@ const CoronaDB = {
      * Inserts a new row containing the state's corona infos.
      * If combined timestamp and state key already exists, this line gets updated
      * 
-     * @param timestamp: The timestamp for the corona cases
      * @param state  The state to insert/update
      */
-    insertRowByTimeAndState (timestamp: string, state: State) {
+    insertState (state: State) {
 
         const stateFound = state !== undefined && state !== null;
 
         if (stateFound) {
-            Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state.name])
+            Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [state.timestamp.toString(), state.name])
                 .then((rows: string[]) => {
                     if (rows.length !== 0) {
                         // Update
-                        Private.updateRow(timestamp, state);
+                        Private.updateRow(state);
                     } else {
-                        Private.insertState(timestamp, state);
+                        Private.insertState(state);
                     }
                 })
                 .catch(err => {
@@ -81,7 +80,7 @@ const CoronaDB = {
                     console.error(err);
                 })
         } else {
-            Private.insertState(timestamp, state);
+            Private.insertState(state);
         }
     }
 

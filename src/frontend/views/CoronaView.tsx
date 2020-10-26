@@ -9,6 +9,7 @@ import State from '../../common/state'
 
 class CoronaView extends React.Component {
   state = {
+    Leer: new State(),
     NDS: new State(),
     HH: new State()
   };
@@ -27,22 +28,19 @@ class CoronaView extends React.Component {
       return newState;
   }
 
-  private updateData() {
-    this.callApi("Niedersachsen")
-      .then(res => {
+  private async updateData() {
+    var response = await fetch('/api/corona/cases?region=Niedersachsen&type=State');
+    var body = await response.json();
+    this.setState({NDS: this.parseDataToState(body)});
 
-        this.setState({NDS: this.parseDataToState(res)});
+    response = await fetch('/api/corona/cases?region=Hamburg&type=State');
+    body = await response.json();
+    this.setState({HH: this.parseDataToState(body)});
 
-      })
-      .catch(err => console.log(err));
+    response = await fetch('/api/corona/cases?region=Leer&type=Region');
+    body = await response.json();
+    this.setState({Leer: this.parseDataToState(body)});
 
-    this.callApi("Hamburg")
-      .then(res => {
-
-        this.setState({HH: this.parseDataToState(res)});
-
-      })
-      .catch(err => console.log(err));
   }
 
   componentDidMount() {
@@ -63,7 +61,7 @@ class CoronaView extends React.Component {
   render() {
     return (
         <GridContainer>
-          <GridItem xs={4}>
+          <GridItem xs={3}>
             <Card>
               <CardHeader>
                   <h4>{this.state.NDS.name}</h4>
@@ -78,7 +76,7 @@ class CoronaView extends React.Component {
               </CardBody>
             </Card>
           </GridItem>
-          <GridItem xs={4}>
+          <GridItem xs={3}>
             <Card>
               <CardHeader>
                   <h4>{this.state.HH.name}</h4>
@@ -93,13 +91,28 @@ class CoronaView extends React.Component {
               </CardBody>
             </Card>
           </GridItem>
-          <GridItem xs={4}>
+          <GridItem xs={3}>
             <Card>
               <CardHeader>
-                This is 3
+                  <h4>{this.state.Leer.name}</h4>
               </CardHeader>
               <CardBody>
-                Body 3
+                  <ul>
+                    <li>Fälle gesamt: {this.state.Leer.count} </li>
+                    <li>Wocheninzidenz: {this.state.Leer.weekIncidence} </li>
+                    <li>Fälle pro 100k: {this.state.Leer.casesPer100k} </li>
+                    <li>Tote: {this.state.Leer.deaths} </li>
+                  </ul>
+              </CardBody>
+            </Card>
+          </GridItem>
+          <GridItem xs={3}>
+            <Card>
+              <CardHeader>
+                Deutchschalnd
+              </CardHeader>
+              <CardBody>
+                TODO
               </CardBody>
             </Card>
           </GridItem>
