@@ -29,7 +29,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "tsc": "tsc"
+    "compile": "tsc --esModuleInterop -p tsconfig.server.json && node ./src/backend/server/server.js",
+    "dev": "nodemon -e ts --exec \"npm run compile\""
   },
   "eslintConfig": {
     "extends": "react-app"

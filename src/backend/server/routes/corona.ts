@@ -1,4 +1,4 @@
-import State from '../state'
+import State from '../../../common/state'
 import axios from 'axios';
 import { Response, Request } from 'express'
 import CoronaDB from '../../database/CoronaDB'

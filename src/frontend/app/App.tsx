@@ -1,5 +1,5 @@
 import React from 'react';
-import Navigation from '../navigation/Navigation'
+import Navigation from '../components/navigation/Navigation'
 import CoronaView from '../views/CoronaView'
 import './App.css';
 

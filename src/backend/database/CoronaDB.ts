@@ -1,5 +1,5 @@
 import Database from './DashboardDB'
-import State from '../server/state'
+import State from '../../common/state'
 
 // Get Queries
 const getRowByTimeAndStateQuery = 'SELECT * FROM corona where timestamp = ? AND state = ?';
