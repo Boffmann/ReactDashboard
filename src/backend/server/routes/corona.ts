@@ -80,7 +80,7 @@ async function getCasesPerState(states: string[]): Promise<State[]> {
             const federation = feature.attributes.LAN_ew_GEN;
             if (states.includes(federation)) {
                 let state = new State();
-                state.timestamp = feature.attributes.Aktualisierung.toString();
+                state.timestamp = feature.attributes.Aktualisierung;
                 state.name = feature.attributes.LAN_ew_GEN;
                 state.count = feature.attributes.Fallzahl;
                 state.deaths = feature.attributes.Death;
@@ -204,12 +204,12 @@ router.get('/cases', async function(req: Request, res: Response) {
 router.get('/cases/previous', async function(req: Request, res: Response) {
     const queryObject = url.parse(req.url, true).query;
     const region: string = queryObject.region;
-    const requested_num_elems: string = queryObject.number;
+    const requested_num_elems: number = queryObject.number;
     var result: string[] = []
 
     const states = await CoronaDB.getRecentStatesByName(region, requested_num_elems);
 
-    const missingNumberOfElems = parseInt(requested_num_elems) - states.length;
+    const missingNumberOfElems = requested_num_elems - states.length;
 
     for (var i = 0; i < missingNumberOfElems; ++i) {
         const item: any = {

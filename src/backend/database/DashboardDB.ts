@@ -25,6 +25,7 @@ class DashboardDB {
 
                 if (err) {
                     reject(err.message);
+                    return;
                 }
 
                 console.log('Connected to the database');
@@ -46,7 +47,7 @@ class DashboardDB {
         });
     }
 
-    public DBQuerySET(query: string, args: string[]): Promise<void> {
+    public DBQuerySET(query: string, args: (string|number)[]): Promise<void> {
         var promise = new Promise<void>((resolve, reject) => {
             mutex.lock('key', (err: Error, unlock: any) => {
                 if (err) {
@@ -54,6 +55,7 @@ class DashboardDB {
                     console.error("Unable to aquire lock");
                     unlock();
                     reject();
+                    return;
                 }
 
                 this.openDB()
@@ -64,27 +66,32 @@ class DashboardDB {
                                 unlock();
                                 this.closeDB(db);
                                 reject(err.message);
+                                return;
                             }
                             unlock();
                             this.closeDB(db);
                             resolve();
+                            return;
                         });
                     })
                     .catch(err => {
                         console.error(err);
+                        unlock();
+                        reject();
                     })
             });
         });
         return promise;
     }
 
-    public DBQueryGET(query: string, args: string[]): Promise<string[]> {
+    public DBQueryGET(query: string, args: (string|number)[]): Promise<string[]> {
         var promise = new Promise<string[]>((resolve, reject) => {
             mutex.lock('key', (err: Error, unlock: any) => {
                 if (err) {
                     console.error(err);
                     unlock();
                     reject("Unable to aquire Lock");
+                    return;
                 }
 
                 this.openDB()
@@ -97,16 +104,20 @@ class DashboardDB {
                                     unlock();
                                     this.closeDB(db);
                                     reject();
+                                    return;
                                 }
                                 unlock();
                                 console.log("Success getting from database");
                                 this.closeDB(db);
                                 resolve(rows);
+                                return;
                             });
                         });
                     })
                     .catch(err => {
                         console.error(err);
+                        unlock();
+                        reject();
                     })
             });
         });

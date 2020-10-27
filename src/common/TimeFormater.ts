@@ -5,21 +5,21 @@ function getCurrentDate(): Date {
     return new Date();
 }
 
-export function getCurrentTimestamp(): string {
-    return getCurrentDate().valueOf().toString();
+export function getCurrentTimestamp(): number {
+    return getCurrentDate().valueOf();
 }
 
-export function getTimestampForDate(date: string): string {
-    return Date.parse(date).toString();
+export function getTimestampForDate(date: string): number {
+    return Date.parse(date);
 }
 
-export function getLastMidnightTimestamp(): string {
+export function getLastMidnightTimestamp(): number {
     const currentDate = getCurrentDate();
     const dateString = currentDate.toLocaleDateString();
-    return Date.parse(dateString).toString();
+    return Date.parse(dateString);
 }
 
-export function germanDateFormatToTimestamp(dateFormat: string): string {
+export function germanDateFormatToTimestamp(dateFormat: string): number | null {
 
     const germanDateMatch = dateFormat.match(/(\d){2}.(\d){2}.(\d){4}/);
 
@@ -31,9 +31,9 @@ export function germanDateFormatToTimestamp(dateFormat: string): string {
             const month = germanDateString.substr(3, 2);
             const year = germanDateString.substr(6, 4);
             console.log("Day: " + day + " Month: " + month + " Year: " + year);
-            return Date.parse(month + "/" + day + "/" + year).toString();
+            return Date.parse(month + "/" + day + "/" + year);
         } 
     }
 
-    return "undefined";
+    return null;
 }

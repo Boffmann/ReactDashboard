@@ -24,12 +24,12 @@ const Private = {
     insertState (state: State) {
         console.log("Inserting new State into database")
         Database.getInstance().DBQuerySET(insertStateQuery, [
-                state.timestamp.toString(),
+                state.timestamp,
                 state.name,
-                state.count.toString(),
-                state.weekIncidence.toString(),
-                state.casesPer100k.toString(),
-                state.deaths.toString()
+                state.count,
+                state.weekIncidence,
+                state.casesPer100k,
+                state.deaths
         ])
         .catch(err => {
             console.log("Error updating Database");
@@ -40,11 +40,11 @@ const Private = {
     updateState (state: State) {
         console.log("Updating Database State")
         Database.getInstance().DBQuerySET(updateStateAtTimeAndStateQuery, [
-            state.count.toString(),
-            state.weekIncidence.toString(),
-            state.casesPer100k.toString(),
-            state.deaths.toString(),
-            state.timestamp.toString(),
+            state.count,
+            state.weekIncidence,
+            state.casesPer100k,
+            state.deaths,
+            state.timestamp,
             state.name
         ])
         .catch(err => {
@@ -56,12 +56,12 @@ const Private = {
     insertTest (test: Test) {
         console.log("Inserting new Test into database")
         Database.getInstance().DBQuerySET(insertTestQuery, [
-            test.year.toString(),
-            test.kw.toString(),
-            test.number.toString(),
-            test.positive.toString(),
-            test.ratio.toString(),
-            test.lab_num.toString()
+            test.year,
+            test.kw,
+            test.number,
+            test.positive,
+            test.ratio,
+            test.lab_num
         ])
         .catch(err => {
             console.log("Error updating Database");
@@ -72,12 +72,12 @@ const Private = {
     updateTest (test: Test) {
         console.log("Updating Database Test")
         Database.getInstance().DBQuerySET(updateStateAtTimeAndStateQuery, [
-            test.number.toString(),
-            test.positive.toString(),
-            test.ratio.toString(),
-            test.lab_num.toString(),
-            test.year.toString(),
-            test.kw.toString()
+            test.number,
+            test.positive,
+            test.ratio,
+            test.lab_num,
+            test.year,
+            test.kw
         ])
         .catch(err => {
             console.log("Error updating Database");
@@ -88,16 +88,16 @@ const Private = {
 
 const CoronaDB = {
 
-    getRecentStatesByName (state: string, number: string): Promise<string[]> {
+    getRecentStatesByName (state: string, number: number): Promise<string[]> {
         return Database.getInstance().DBQueryGET(getRecentStatesByStateQuery, [state, number]);
     },
 
-    getStateByTimeAndName (timestamp: string, state: string): Promise<string[]> {
+    getStateByTimeAndName (timestamp: number, state: string): Promise<string[]> {
         return Database.getInstance().DBQueryGET(getStateByTimeAndStateQuery, [timestamp, state]);
     },
 
     getTestByYearAndKW (year: number, kw: number): Promise<string[]> {
-        return Database.getInstance().DBQueryGET(getTestByYearAndKWQuery, [year.toString(), kw.toString()]);
+        return Database.getInstance().DBQueryGET(getTestByYearAndKWQuery, [year, kw]);
     },
 
     // Insert Functions
@@ -113,7 +113,7 @@ const CoronaDB = {
         const stateFound = state !== undefined && state !== null;
 
         if (stateFound) {
-            Database.getInstance().DBQueryGET(getStateByTimeAndStateQuery, [state.timestamp.toString(), state.name])
+            CoronaDB.getStateByTimeAndName(state.timestamp, state.name)
                 .then((rows: string[]) => {
                     if (rows.length !== 0) {
                         // Update

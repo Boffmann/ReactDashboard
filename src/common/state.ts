@@ -1,6 +1,6 @@
 
 export default class State {
-    public timestamp: string;
+    public timestamp: number;
     public name: string;
     public count: number;
     public difference: number;
@@ -10,7 +10,7 @@ export default class State {
     public deaths: number;
 
     constructor() {
-        this.timestamp = "";
+        this.timestamp = 0;
         this.name = "";
         this.count = 0;
         this.difference = 0;
