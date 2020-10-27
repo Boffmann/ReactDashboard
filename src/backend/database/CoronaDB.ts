@@ -14,7 +14,7 @@ const updateStateAtTimeAndStateQuery = 'UPDATE corona set cases = ?, weekInciden
 const updateTestAtYearAndKW = 'UPDATE tests set number = ?, positive = ?, ratio = ?, lab_num = ? WHERE year = ? AND kw = ?'
 
 // Insert Queries
-const insertStateQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidence, casesPer100k, death) VALUES(?, ?, ?, ?, ?, ?)';
+const insertStateQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidence, casesPer100k, death, RValue) VALUES(?, ?, ?, ?, ?, ?, ?)';
 const insertTestQuery = 'INSERT INTO tests(year, kw, number, positive, ratio, lab_num) VALUES(?, ?, ?, ?, ?, ?)';
 
 // Get Functions
@@ -29,7 +29,8 @@ const Private = {
                 state.count,
                 state.weekIncidence,
                 state.casesPer100k,
-                state.deaths
+                state.deaths,
+                state.R_Wert
         ])
         .catch(err => {
             console.log("Error updating Database");

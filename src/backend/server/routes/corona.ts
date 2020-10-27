@@ -1,11 +1,13 @@
 import axios from 'axios';
 import fs from 'fs';
 import { Response, Request } from 'express'
+import cheerio from 'cheerio'
 import xlsxFile from 'read-excel-file/node'
 import State from '../../../common/state'
 import Test from '../../../common/test'
 import CoronaDB from '../../database/CoronaDB'
 import { getTimestampForDate, germanDateFormatToTimestamp } from '../../../common/TimeFormater'
+import { RSA_NO_PADDING } from 'constants';
 const url = require('url')
 var express = require('express');
 var router = express.Router();
@@ -42,6 +44,7 @@ interface FeatureState {
 
 
 const xlsxFilePath: string = "/home/hendrik/Documents/tests.xlsx";
+const inhabitantsGermany = 81495937;
 
 async function getCasesPerRegion(region: string): Promise<State> {
 
@@ -93,6 +96,49 @@ async function getCasesPerState(states: string[]): Promise<State[]> {
         resolve(res_states);
     });
 
+
+    return promise;
+}
+
+async function getRValueForGermany(): Promise<number> {
+
+    var promise = new Promise<number>(async (resolve, reject) => {
+
+        const response = await axios.get("https://www.corona-in-zahlen.de/r-wert/");
+        const $ = cheerio.load(response.data);
+        const RValueElement = $(".card-title").eq(1);
+        const RValue = RValueElement.text().replace(/,/,'.');
+
+        resolve(parseFloat(RValue));
+    });
+
+    return promise;
+}
+
+async function getCasesForGermany(): Promise<State> {
+
+    var promise = new Promise<State>(async (resolve, reject) => {
+        var res_state = new State();
+        const response = await axios.get("https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/Coronaf%C3%A4lle_in_den_Bundesl%C3%A4ndern/FeatureServer/0/query?where=1%3D1&outFields=LAN_ew_GEN,LAN_ew_EWZ,Fallzahl,Aktualisierung,faelle_100000_EW,Death,cases7_bl_per_100k&returnGeometry=false&outSR=4326&f=json");
+        const apiData: APIDataState = response.data;
+
+        if (apiData.features && apiData.features.length !== 0) {
+            res_state.timestamp = apiData.features[0].attributes.Aktualisierung;
+            res_state.name = "Deutschland";
+
+            for (const feature of apiData.features) {
+                res_state.count += feature.attributes.Fallzahl;
+                res_state.deaths += feature.attributes.Death;
+            }
+
+            const RValue = await getRValueForGermany();
+            res_state.R_Wert = RValue;
+
+            res_state.casesPer100k = (res_state.count / inhabitantsGermany) * 100000;
+        }
+
+        resolve(res_state);
+    });
 
     return promise;
 }
@@ -186,6 +232,9 @@ router.get('/cases', async function(req: Request, res: Response) {
             case "State":
                 states = await getCasesPerState(regions);
                 break;
+            case "Country":
+                states = [await getCasesForGermany()];
+                break;
             default:
                 res.json({error: "Selected Type not supported. Use either Region, State or Country"});
         }
@@ -231,6 +280,11 @@ router.get('/cases/previous', async function(req: Request, res: Response) {
     });
     
     res.json({result: result});
+})
+
+router.get('/test', async function(req: Request, res: Response) {
+    await getRValueForGermany();
+    res.json({success: true});
 })
 
 module.exports = router
