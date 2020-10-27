@@ -3,6 +3,7 @@ import State from '../../common/state'
 
 // Get Queries
 const getRowByTimeAndStateQuery = 'SELECT * FROM corona where timestamp = ? AND state = ?';
+const getRecentRowsByStateQuery = 'SELECT * FROM corona where state = ? ORDER BY timestamp DESC LIMIT ?';
 
 // Update Queries
 const updateRowAtTimeAndStateQuery = 'UPDATE corona set cases = ?, weekIncidence = ?, casesPer100k = ?, death = ? WHERE timestamp = ? AND state = ?'
@@ -48,6 +49,10 @@ const Private = {
 };
 
 const CoronaDB = {
+
+    getRecentRowsByState (state: string, number: string): Promise<string[]> {
+        return Database.getInstance().DBQueryGET(getRecentRowsByStateQuery, [state, number]);
+    },
 
     getRowByTimeAndState (timestamp: string, state: string): Promise<string[]> {
         return Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state]);
