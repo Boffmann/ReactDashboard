@@ -13,8 +13,8 @@ app.use('/api/corona', coronaRoutes)
 app.post('/api/world', (req, res) => {
     console.log(req.body);
     res.send(
-        'I received a post. This is what you send: ${req.body.post}',
+        `I received a post. This is what you send: ${req.body.post}`,
     );
 });
 
-app.listen(port, () => console.log('Listening on port ${port}'));
+app.listen(port, () => console.log(`Listening on port ${port}`));

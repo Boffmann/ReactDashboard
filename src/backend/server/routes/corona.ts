@@ -1,6 +1,9 @@
-import State from '../../../common/state'
 import axios from 'axios';
-import { Response, Request, query } from 'express'
+import fs from 'fs';
+import { Response, Request } from 'express'
+import xlsxFile from 'read-excel-file/node'
+import State from '../../../common/state'
+import Test from '../../../common/test'
 import CoronaDB from '../../database/CoronaDB'
 import { getTimestampForDate, germanDateFormatToTimestamp } from '../../../common/TimeFormater'
 const url = require('url')
@@ -36,6 +39,9 @@ interface FeatureState {
         LAN_ew_GEN: string
     }
 }
+
+
+const xlsxFilePath: string = "/home/hendrik/Documents/tests.xlsx";
 
 async function getCasesPerRegion(region: string): Promise<State> {
 
@@ -91,6 +97,80 @@ async function getCasesPerState(states: string[]): Promise<State[]> {
     return promise;
 }
 
+function parseRKITestFile(): Promise<Test[]> {
+
+    var year: number = 1970;
+    var tests: Test[] = [];
+
+    var promise = new Promise<Test[]>((resolve, reject) => {
+        xlsxFile(xlsxFilePath, {sheet: 'Testzahlen'})
+            .then ((rows: string[][]) => {
+                console.log("Parse XLSX");
+
+                const yearMatch = rows[0][0].match(/(\d){4}/);
+                if (yearMatch) {
+                    year = parseInt(yearMatch[0]);
+                }
+                
+                for (var row = 2; row < rows.length - 1; ++row) {
+                    const test: Test = {
+                        year: year,
+                        kw: parseInt(rows[row][0]),
+                        number: parseInt(rows[row][1]),
+                        positive: parseInt(rows[row][2]),
+                        ratio: parseFloat(rows[row][3]),
+                        lab_num: parseInt(rows[row][4]),
+                    };
+                    tests.push(test);
+                }
+
+                resolve(tests);
+            }) .catch((err: Error) => {
+                reject(err);
+            })
+
+    });
+
+    return promise;
+}
+
+function getNewRKITestFile(): Promise<void> {
+
+    var promise = new Promise<void>((resolve, reject) => {
+        axios({
+            url: "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Daten/Testzahlen-gesamt.xlsx?__blob=publicationFile",
+            method: 'GET',
+            responseType: 'stream'
+        }).then((response) => {
+            response.data.pipe(fs.createWriteStream(xlsxFilePath));
+            resolve();
+        })
+        .catch((error: Error) => {
+            reject(error);
+        }) 
+    })
+
+
+    return promise;
+}
+
+router.get('/tests', async function(req: Request, res: Response) {
+    getNewRKITestFile()
+        .then (() => {
+            parseRKITestFile()
+                .then((tests) => {
+                    tests.forEach(test => CoronaDB.insertTest(test));
+                    res.json({success: true, tests: tests});
+                }) .catch ((err: Error) => {
+                    console.log(err.message);
+                    res.json({success: false, tests: []});
+                })
+        }) .catch((err: Error) => {
+            console.log(err);
+            res.json({success: false, tests: []});
+        }) 
+})
+
 router.get('/cases', async function(req: Request, res: Response) {
     const queryObject = url.parse(req.url, true).query;
     const regions_string: string = queryObject.region;
@@ -127,7 +207,7 @@ router.get('/cases/previous', async function(req: Request, res: Response) {
     const requested_num_elems: string = queryObject.number;
     var result: string[] = []
 
-    const states = await CoronaDB.getRecentRowsByState(region, requested_num_elems);
+    const states = await CoronaDB.getRecentStatesByName(region, requested_num_elems);
 
     const missingNumberOfElems = parseInt(requested_num_elems) - states.length;
 

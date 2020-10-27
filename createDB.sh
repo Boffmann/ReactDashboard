@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dbFile='./src/database/dashboard.db'
+dbFile='./src/backend/database/dashboard.db'
 
 if [ -f "$dbFile" ]; then
   echo "Database file already exists"
@@ -11,4 +11,5 @@ fi
 echo "Creating new database..."
 touch $dbFile
 sqlite3 $dbFile "CREATE TABLE corona(timestamp, state, cases, weekIncidence, casesPer100k, death);"
+sqlite3 $dbFile "CREATE TABLE tests(year, kw, number, positive, ratio, lab_num);"
 echo "Done"

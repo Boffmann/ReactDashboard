@@ -1,23 +1,29 @@
 import Database from './DashboardDB'
 import State from '../../common/state'
+import Test from '../../common/test'
+import { Console } from 'console';
 
 // Get Queries
-const getRowByTimeAndStateQuery = 'SELECT * FROM corona where timestamp = ? AND state = ?';
-const getRecentRowsByStateQuery = 'SELECT * FROM corona where state = ? ORDER BY timestamp DESC LIMIT ?';
+const getStateByTimeAndStateQuery = 'SELECT * FROM corona where timestamp = ? AND state = ?';
+const getRecentStatesByStateQuery = 'SELECT * FROM corona where state = ? ORDER BY timestamp DESC LIMIT ?';
+
+const getTestByYearAndKWQuery = "SELECT * FROM tests where year = ? AND kw = ?";
 
 // Update Queries
-const updateRowAtTimeAndStateQuery = 'UPDATE corona set cases = ?, weekIncidence = ?, casesPer100k = ?, death = ? WHERE timestamp = ? AND state = ?'
+const updateStateAtTimeAndStateQuery = 'UPDATE corona set cases = ?, weekIncidence = ?, casesPer100k = ?, death = ? WHERE timestamp = ? AND state = ?'
+const updateTestAtYearAndKW = 'UPDATE tests set number = ?, positive = ?, ratio = ?, lab_num = ? WHERE year = ? AND kw = ?'
 
 // Insert Queries
-const insertRowQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidence, casesPer100k, death) VALUES(?, ?, ?, ?, ?, ?)';
+const insertStateQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidence, casesPer100k, death) VALUES(?, ?, ?, ?, ?, ?)';
+const insertTestQuery = 'INSERT INTO tests(year, kw, number, positive, ratio, lab_num) VALUES(?, ?, ?, ?, ?, ?)';
 
 // Get Functions
 
 const Private = {
 
     insertState (state: State) {
-        console.log("Inserting new Row into database")
-        Database.getInstance().DBQuerySET(insertRowQuery, [
+        console.log("Inserting new State into database")
+        Database.getInstance().DBQuerySET(insertStateQuery, [
                 state.timestamp.toString(),
                 state.name,
                 state.count.toString(),
@@ -31,9 +37,9 @@ const Private = {
         })
     }, 
 
-    updateRow (state: State) {
-        console.log("Updating Database")
-        Database.getInstance().DBQuerySET(updateRowAtTimeAndStateQuery, [
+    updateState (state: State) {
+        console.log("Updating Database State")
+        Database.getInstance().DBQuerySET(updateStateAtTimeAndStateQuery, [
             state.count.toString(),
             state.weekIncidence.toString(),
             state.casesPer100k.toString(),
@@ -45,17 +51,53 @@ const Private = {
             console.log("Error updating Database");
             console.error(err);
         })
-    }
+    },
+
+    insertTest (test: Test) {
+        console.log("Inserting new Test into database")
+        Database.getInstance().DBQuerySET(insertTestQuery, [
+            test.year.toString(),
+            test.kw.toString(),
+            test.number.toString(),
+            test.positive.toString(),
+            test.ratio.toString(),
+            test.lab_num.toString()
+        ])
+        .catch(err => {
+            console.log("Error updating Database");
+            console.error(err);
+        })
+    },
+
+    updateTest (test: Test) {
+        console.log("Updating Database Test")
+        Database.getInstance().DBQuerySET(updateStateAtTimeAndStateQuery, [
+            test.number.toString(),
+            test.positive.toString(),
+            test.ratio.toString(),
+            test.lab_num.toString(),
+            test.year.toString(),
+            test.kw.toString()
+        ])
+        .catch(err => {
+            console.log("Error updating Database");
+            console.error(err);
+        })
+    },
 };
 
 const CoronaDB = {
 
-    getRecentRowsByState (state: string, number: string): Promise<string[]> {
-        return Database.getInstance().DBQueryGET(getRecentRowsByStateQuery, [state, number]);
+    getRecentStatesByName (state: string, number: string): Promise<string[]> {
+        return Database.getInstance().DBQueryGET(getRecentStatesByStateQuery, [state, number]);
     },
 
-    getRowByTimeAndState (timestamp: string, state: string): Promise<string[]> {
-        return Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [timestamp, state]);
+    getStateByTimeAndName (timestamp: string, state: string): Promise<string[]> {
+        return Database.getInstance().DBQueryGET(getStateByTimeAndStateQuery, [timestamp, state]);
+    },
+
+    getTestByYearAndKW (year: number, kw: number): Promise<string[]> {
+        return Database.getInstance().DBQueryGET(getTestByYearAndKWQuery, [year.toString(), kw.toString()]);
     },
 
     // Insert Functions
@@ -71,11 +113,11 @@ const CoronaDB = {
         const stateFound = state !== undefined && state !== null;
 
         if (stateFound) {
-            Database.getInstance().DBQueryGET(getRowByTimeAndStateQuery, [state.timestamp.toString(), state.name])
+            Database.getInstance().DBQueryGET(getStateByTimeAndStateQuery, [state.timestamp.toString(), state.name])
                 .then((rows: string[]) => {
                     if (rows.length !== 0) {
                         // Update
-                        Private.updateRow(state);
+                        Private.updateState(state);
                     } else {
                         Private.insertState(state);
                     }
@@ -86,6 +128,29 @@ const CoronaDB = {
                 })
         } else {
             Private.insertState(state);
+        }
+    },
+
+    insertTest (test: Test) {
+
+        const testFound = test !== undefined && test !== null;
+
+        if (testFound) {
+            CoronaDB.getTestByYearAndKW(test.year, test.kw)
+                .then((rows) => {
+                    if (rows.length !== 0) {
+                        Private.updateTest(test);
+                    } else {
+                        Private.insertTest(test);
+                    }
+                })
+                .catch(err => {
+                    console.log("Error whilye inserting test");
+                    console.error(err);
+                })
+                
+        } else {
+            Private.insertTest(test);
         }
     }
 
