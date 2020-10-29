@@ -7,7 +7,6 @@ import State from '../../../common/state'
 import Test from '../../../common/test'
 import CoronaDB from '../../database/CoronaDB'
 import { getTimestampForDate, germanDateFormatToTimestamp } from '../../../common/TimeFormater'
-import { RSA_NO_PADDING } from 'constants';
 const url = require('url')
 var express = require('express');
 var router = express.Router();
@@ -201,12 +200,41 @@ function getNewRKITestFile(): Promise<void> {
 }
 
 router.get('/tests', async function(req: Request, res: Response) {
+    const queryObject = url.parse(req.url, true).query;
+    const number: number = queryObject.number;
+
     getNewRKITestFile()
         .then (() => {
             parseRKITestFile()
                 .then((tests) => {
-                    tests.forEach(test => CoronaDB.insertTest(test));
-                    res.json({success: true, tests: tests});
+                    const tests_length = tests.length;
+                    console.log(`Length: ${tests_length}`);
+                    if (tests_length === 0) {
+                        res.json({success: true, tests: []});
+                        return;
+                    }
+                    var result_tests: Test[] = [];
+                    if (tests.length >= number) {
+                        for (var index = tests_length - number; index < tests_length; ++index) {
+                            result_tests.push(tests[index]);
+                        }
+                    } else {
+                        const missing_elements = number - tests_length;
+                        const first_kw = tests[0].kw;
+                        for (var index = 0; index < missing_elements; ++index) {
+                            var newTest = new Test();
+                            newTest.year = tests[0].year;
+                            newTest.kw = first_kw - missing_elements + index;
+                            newTest.number = 0;
+                            newTest.positive = 0;
+                            newTest.ratio = 0;
+                            newTest.lab_num = 0;
+                            result_tests.push(newTest);
+                        }
+                        tests.forEach(test => result_tests.push(test));
+                    }
+                    // result_tests.forEach(test => CoronaDB.insertTest(test));
+                    res.json({success: true, tests: result_tests});
                 }) .catch ((err: Error) => {
                     console.log(err.message);
                     res.json({success: false, tests: []});
