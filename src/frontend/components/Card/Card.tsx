@@ -33,8 +33,9 @@ const useStyles = makeStyles({
     card: {
         position: "relative",
         background: "#689d6a",
-        margin: "20px",
-        height: "180px"
+        marginLeft: "10px",
+        marginRight: "10px",
+        height: "100%"
     }
 });
 

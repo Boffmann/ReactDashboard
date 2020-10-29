@@ -1,12 +1,14 @@
+html, body, #root {
+  height: 100%;
+}
+
 body {
   background-color: #282828;
 }
 
 .App {
   position: static;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
+  height: 100%;
 }
 
 .App-logo {
@@ -33,6 +35,14 @@ body {
 
 .App-link {
   color: #61dafb;
+}
+
+.content {
+  display: flex;
+  flex-flow: column;
+  height: 90%;
+  /* flex-direction: column;
+  text-align: center; */
 }
 
 @keyframes App-logo-spin {

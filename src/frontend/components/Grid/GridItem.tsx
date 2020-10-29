@@ -9,7 +9,9 @@ interface GridItemProps {
 }
 
 const useStyles = makeStyles({
-  grid: {}
+  grid: {
+    height: '100%'
+  }
 });
 
 const GridItem: React.FC<GridItemProps> = (props) => {

@@ -139,8 +139,8 @@ class CoronaView extends React.Component {
 
 
     return (
-      <div>
-        <GridContainer>
+      <div style={{height: '100%'}}>
+        <GridContainer height="20%">
           <GridItem xs={3}>
             <Card>
               <CardHeader>
@@ -202,9 +202,15 @@ class CoronaView extends React.Component {
             </Card>
           </GridItem>
         </GridContainer>
-        <div /*style={{backgroundColor: 'white'}}*/>
-        <Graph data = {tvpData}/>
-        </div>
+        <div style={{height: "10%"}}></div>
+        <GridContainer height="50%">
+          <GridItem xs={6}>
+            <Graph data = {tvpData}/>
+          </GridItem>
+          <GridItem xs={6}>
+            <Graph data = {tvpData}/>
+          </GridItem>
+        </GridContainer>
       </div>
     );
   }

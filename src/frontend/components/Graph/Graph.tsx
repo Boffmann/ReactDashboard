@@ -14,10 +14,10 @@ const Graph: React.FC<GraphProps> = props => {
     // console.log(`First Data: ${firstData[0].x}`);
 
     return (
-        <XYPlot
+        <XYPlot xs
             xType="ordinal"
             width={800}
-            height={300}>
+            height={400}>
             <DiscreteColorLegend 
                 items={[
                     {title: 'Title', color: 'violet'},

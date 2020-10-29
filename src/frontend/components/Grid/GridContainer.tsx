@@ -5,24 +5,28 @@ import Grid from '@material-ui/core/Grid'
 interface GridProps {
   children: ReactNode;
   className?: string;
+  height: string;
 }
 
 const useStyles = makeStyles({
   grid: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    // height: '20%',
+    marginTop: '2%',
+    marginBottom: '2%'
   }
 });
 
 export default function GridContainer(props: GridProps) {
 
-    const classes = useStyles();
-    const {children, ...rest } = props;
+  const classes = useStyles();
+  const {children, height, ...rest } = props;
 
-    return (
-        <Grid container {...rest} className={classes.grid}>
-            {children}
-        </Grid>
-    );
+  return (
+      <Grid container {...rest} style={{height: height}} className={classes.grid}>
+          {children}
+      </Grid>
+  );
 }
