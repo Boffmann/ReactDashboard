@@ -14,7 +14,7 @@ export default class Graph extends React.Component {
     componentDidUpdate() {
         const { lines, ...rest } = this.props;
         const firstLine = lines[0]; 
-        const secondLine = lines[1];
+        // const secondLine = lines[1];
         const myChartRef = this.chartRef.current.getContext("2d");
         
         new Chart(myChartRef, {
@@ -27,14 +27,14 @@ export default class Graph extends React.Component {
                         label: firstLine.label,
                         data: firstLine.y_values,
                         fill: false,
-                        borderColor: "#FF0000"
-                    },
-                    {
-                        label: secondLine.label,
-                        data: secondLine.y_values,
-                        fill: false,
-                        borderColor: "#00FF00"
-                    }
+                        borderColor: "#FB4934"
+                    }//,
+                    // {
+                    //     label: secondLine.label,
+                    //     data: secondLine.y_values,
+                    //     fill: false,
+                    //     borderColor: "#00FF00"
+                    // }
                 ]
             },
             options: {
@@ -50,10 +50,15 @@ export default class Graph extends React.Component {
                 },
                 scales: {
                     yAxes: [{
-                        type: 'logarithmic',
+                        // type: 'logarithmic',
                         ticks: {
                             fontColor: '#FFF',
                             fontSize: 12
+                        },
+                        gridLines: {
+                            color: 'rgba(255, 255, 255, 0.3)',
+                            drawTicks: false,
+                            drawBorder: false
                         }
                     }],
                     xAxes: [{
@@ -71,8 +76,8 @@ export default class Graph extends React.Component {
 
         return (
             <canvas
-                style={{padding: '2%'}}
-                id="myChart"
+                style={{height: '100%', width: '100%'}}
+                // id="myChart"
                 ref={this.chartRef}
             />
         )

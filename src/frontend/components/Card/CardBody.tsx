@@ -12,8 +12,9 @@ const useStyles = makeStyles({
         position: "absolute",
         top: "40%",
         left: "0px",
-        marginLeft: "1.75rem",
         textAlign: "left",
+        width: '100%',
+        height: '30%'
     }
 });
 

@@ -100,9 +100,9 @@ class CoronaView extends React.Component {
     // console.log(tmp);
     // this.setState({TvP: tmp});
 
-    var response = await fetch('/api/corona/tests?number=10');
-    var body = await response.json();
-    this.setState({TvP: this.parseAPIDataToTestsVsPositive(body)});
+    // var response = await fetch('/api/corona/tests?number=10');
+    // var body = await response.json();
+    // this.setState({TvP: this.parseAPIDataToTestsVsPositive(body)});
 
   }
 
@@ -207,12 +207,12 @@ class CoronaView extends React.Component {
           </GridItem>
         </GridContainer>
         <div style={{height: "5%"}}></div>
-        <GridContainer height="55%">
+        <GridContainer height="60%">
           <GridItem xs={6}>
-            <Graph lines = {[testLine, positiveLine]}/>
+            <Graph lines = {[testLine]}/>
           </GridItem>
           <GridItem xs={6}>
-            <Graph lines = {[testLine, positiveLine]}/>
+            <Graph lines = {[positiveLine]}/>
           </GridItem>
         </GridContainer>
       </div>

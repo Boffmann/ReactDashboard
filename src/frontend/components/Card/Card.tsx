@@ -35,7 +35,7 @@ const useStyles = makeStyles({
         background: "#689d6a",
         marginLeft: "10px",
         marginRight: "10px",
-        height: "100%"
+        height: "100%",
     }
 });
 
