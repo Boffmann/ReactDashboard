@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.css"
 function Navigation() {
 
     return (
-    <nav style={{backgroundColor: "#504945"}} className="navbar navbar-expand-lg is-dark-text">
+    <nav style={{backgroundColor: "#504945", height: '7%'}} className="navbar navbar-expand-lg is-dark-text">
         <div className="navbar-nav h1 mb-0 text-large font-medium">
             <NavButton label ="First" variant="basic"/>
             <NavButton label ="Second" variant="basic"/>

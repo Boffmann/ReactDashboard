@@ -6,16 +6,17 @@ import CardHeader from '../components/Card/CardHeader'
 import CardBody from '../components/Card/CardBody'
 import Graph from '../components/Graph/Graph'
 import State from '../../common/state'
+import GraphLine from '../components/Graph/GraphLine'
 
 class TestsVsPositive {
-  public yearAndKW: string;
-  public tests: number;
-  public positive: number
+  public yearAndKW: string[];
+  public tests: number[];
+  public positive: number[];
 
   constructor() {
-    this.yearAndKW = "";
-    this.tests = 0;
-    this.positive = 0;
+    this.yearAndKW = [];
+    this.tests = [];
+    this.positive = [];
   }
 }
 
@@ -37,7 +38,7 @@ class CoronaView extends React.Component {
     NDS: new State(),
     HH: new State(),
     Germany: new State(),
-    TvP: [new TestsVsPositive()]
+    TvP: new TestsVsPositive()
   };
 
   private parseAPIDataToState(data: any): State {
@@ -54,43 +55,40 @@ class CoronaView extends React.Component {
       return newState;
   }
 
-  private parseAPIDataToTestsVsPositive(data: any): TestsVsPositive[] {
-    var TvP: TestsVsPositive[] = [];
+  private parseAPIDataToTestsVsPositive(data: any): TestsVsPositive {
+    var TvP = new TestsVsPositive();
 
     for (var index = 0; index < data.tests.length; ++index) {
       const test = data.tests[index];
       console.log(`Test: ${test}`);
-      var newTvP = new TestsVsPositive();
       // newTvP.yearAndKW = test.year.toString() + "/" + test.kw.toString();
-      newTvP.yearAndKW = test.kw.toString();
-      newTvP.tests = test.number;
-      newTvP.positive = test.positive;
-
-      TvP.push(newTvP);
+      TvP.yearAndKW.push(test.kw);
+      TvP.tests.push(test.number);
+      TvP.positive.push(test.positive);
     }
 
     return TvP;
   }
 
   private async updateData() {
-    var response = await fetch('/api/corona/cases?region=Niedersachsen&type=State');
-    var body = await response.json();
-    this.setState({NDS: this.parseAPIDataToState(body)});
+    // var response = await fetch('/api/corona/cases?region=Niedersachsen&type=State');
+    // var body = await response.json();
+    // this.setState({NDS: this.parseAPIDataToState(body)});
 
 
-    response = await fetch('/api/corona/cases?region=Hamburg&type=State');
-    body = await response.json();
-    this.setState({HH: this.parseAPIDataToState(body)});
+    // response = await fetch('/api/corona/cases?region=Hamburg&type=State');
+    // body = await response.json();
+    // this.setState({HH: this.parseAPIDataToState(body)});
 
-    response = await fetch('/api/corona/cases?region=Leer&type=Region');
-    body = await response.json();
-    this.setState({Leer: this.parseAPIDataToState(body)});
+    // response = await fetch('/api/corona/cases?region=Leer&type=Region');
+    // body = await response.json();
+    // this.setState({Leer: this.parseAPIDataToState(body)});
 
-    response = await fetch('/api/corona/cases?region=germany&type=Country');
-    body = await response.json();
-    var germany = this.parseAPIDataToState(body);
-    germany.R_Wert = body.states[0].R_Wert;
-    this.setState({Germany: germany});
+    // response = await fetch('/api/corona/cases?region=germany&type=Country');
+    // body = await response.json();
+    // var germany = this.parseAPIDataToState(body);
+    // germany.R_Wert = body.states[0].R_Wert;
+    // this.setState({Germany: germany});
 
     // var tmp: TestsVsPositive[] = [];
     // for (var index = 0; index < 10; ++index) {
@@ -102,14 +100,21 @@ class CoronaView extends React.Component {
     // console.log(tmp);
     // this.setState({TvP: tmp});
 
-    response = await fetch('/api/corona/tests?number=10');
-    body = await response.json();
+    var response = await fetch('/api/corona/tests?number=10');
+    var body = await response.json();
     this.setState({TvP: this.parseAPIDataToTestsVsPositive(body)});
 
   }
 
   componentDidMount() {
     // this.updateData();
+
+    var tvp = new TestsVsPositive();
+    tvp.yearAndKW = ["1", "2", "3", "4", "5", "6", "7"];
+    tvp.tests = [10000, 250000, 300000, 40000, 5000000, 560000, 910000];
+    tvp.positive = [1, 2, 3, 4, 5, 6, 7];
+    
+    this.setState({TvP: tvp});
   }
 
   callApi = async (regions: string) => {
@@ -125,17 +130,16 @@ class CoronaView extends React.Component {
   
   render() {
 
-    var numberOfTestsOverTime: {x: string, y: number}[] = [];
-    var numberOfPositiveOverTime: {x: string, y: number}[] = [];
-    for (var tvp of this.state.TvP) {
-      numberOfTestsOverTime.push({x: tvp.yearAndKW, y: tvp.tests});
-      numberOfPositiveOverTime.push({x: tvp.yearAndKW, y: tvp.positive});
-    }
-    // var tvpData = [numberOfTestsOverTime, numberOfPositiveOverTime];
-    var tvpData = [];
-    tvpData[0] = numberOfTestsOverTime;
-    tvpData[1] = numberOfPositiveOverTime;
-    console.log(tvpData);
+    const testLine = new GraphLine(
+        this.state.TvP.yearAndKW,
+        this.state.TvP.tests,
+        "Tests"
+    )
+    const positiveLine = new GraphLine(
+        this.state.TvP.yearAndKW,
+        this.state.TvP.positive,
+        "Positive"
+    )
 
 
     return (
@@ -202,13 +206,13 @@ class CoronaView extends React.Component {
             </Card>
           </GridItem>
         </GridContainer>
-        <div style={{height: "10%"}}></div>
-        <GridContainer height="50%">
+        <div style={{height: "5%"}}></div>
+        <GridContainer height="55%">
           <GridItem xs={6}>
-            <Graph data = {tvpData}/>
+            <Graph lines = {[testLine, positiveLine]}/>
           </GridItem>
           <GridItem xs={6}>
-            <Graph data = {tvpData}/>
+            <Graph lines = {[testLine, positiveLine]}/>
           </GridItem>
         </GridContainer>
       </div>

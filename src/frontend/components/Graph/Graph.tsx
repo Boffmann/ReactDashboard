@@ -1,60 +1,82 @@
 import React from 'react';
-import { XYPlot, XAxis, YAxis, LineSeries, DiscreteColorLegend } from 'react-vis';
-import 'react-vis/dist/style.css'
+import Chart from 'chart.js'
+import GraphLine from './GraphLine'
 
 interface GraphProps {
-    data: {x: string, y: number}[][];
+    lines: GraphLine[]
 }
 
-const Graph: React.FC<GraphProps> = props => {
+export default class Graph extends React.Component {
 
-    const { data, ...rest } = props;
-    const firstData = data[0]; 
-    const secondData = data[1];
-    // console.log(`First Data: ${firstData[0].x}`);
+    props: GraphProps;
+    chartRef = React.createRef<HTMLCanvasElement>();
 
-    return (
-        <XYPlot xs
-            xType="ordinal"
-            width={800}
-            height={400}>
-            <DiscreteColorLegend 
-                items={[
-                    {title: 'Title', color: 'violet'},
-                    {title: 'Title2', color: 'green'}
-                ]}
+    componentDidUpdate() {
+        const { lines, ...rest } = this.props;
+        const firstLine = lines[0]; 
+        const secondLine = lines[1];
+        const myChartRef = this.chartRef.current.getContext("2d");
+        
+        new Chart(myChartRef, {
+            type: "line",
+            data: {
+                //Bring in data
+                labels: firstLine.x_values,
+                datasets: [
+                    {
+                        label: firstLine.label,
+                        data: firstLine.y_values,
+                        fill: false,
+                        borderColor: "#FF0000"
+                    },
+                    {
+                        label: secondLine.label,
+                        data: secondLine.y_values,
+                        fill: false,
+                        borderColor: "#00FF00"
+                    }
+                ]
+            },
+            options: {
+                //Customize chart options
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 80,
+                        fontColor: 'rgb(255, 255, 255)',
+                        fontSize: 18
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        type: 'logarithmic',
+                        ticks: {
+                            fontColor: '#FFF',
+                            fontSize: 12
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontColor: '#FFF',
+                            fontSize: 12
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+    render() {
+
+        return (
+            <canvas
+                style={{padding: '2%'}}
+                id="myChart"
+                ref={this.chartRef}
             />
-            <LineSeries
-                data={[{x: 1, y: 0}]}
-                style={{display: 'none'}}
-            />
-            <LineSeries
-                data = {[
-                    {x:1, y:4},
-                    {x:5, y:2},
-                    {x:15, y:6}
-                ]}
-                style={{stroke: 'violet',
-                        strokeWidth: 3}}
-            />
-            <LineSeries
-                data = {[
-                    {x:1, y:3},
-                    {x:5, y:7},
-                    {x:15, y:24}
-                ]}
-                style={{stroke: 'green',
-                        strokeWidth: 3}}
-            />
-            {/* <LineSeries
-                data = {firstData}/> */}
-            {/* <LineSeries
-                data = {secondData}/> */}
-            <XAxis />
-            <YAxis />
-        </XYPlot>
-    )
+        )
+
+    }
 
 };
-
-export default Graph;
