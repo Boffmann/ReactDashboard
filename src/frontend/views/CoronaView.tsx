@@ -4,9 +4,11 @@ import GridItem from '../components/Grid/GridItem'
 import Card from '../components/Card/Card'
 import CardHeader from '../components/Card/CardHeader'
 import CardBody from '../components/Card/CardBody'
+import KeyValueGrid from '../components/Card/KeyValueGrid'
 import Graph from '../components/Graph/Graph'
 import State from '../../common/state'
 import GraphLine from '../components/Graph/GraphLine'
+import '../app/App.css'
 
 class TestsVsPositive {
   public yearAndKW: string[];
@@ -71,34 +73,25 @@ class CoronaView extends React.Component {
   }
 
   private async updateData() {
-    // var response = await fetch('/api/corona/cases?region=Niedersachsen&type=State');
-    // var body = await response.json();
-    // this.setState({NDS: this.parseAPIDataToState(body)});
+    var response = await fetch('/api/corona/cases?region=Niedersachsen&type=State');
+    var body = await response.json();
+    this.setState({NDS: this.parseAPIDataToState(body)});
 
 
-    // response = await fetch('/api/corona/cases?region=Hamburg&type=State');
-    // body = await response.json();
-    // this.setState({HH: this.parseAPIDataToState(body)});
+    response = await fetch('/api/corona/cases?region=Hamburg&type=State');
+    body = await response.json();
+    this.setState({HH: this.parseAPIDataToState(body)});
 
-    // response = await fetch('/api/corona/cases?region=Leer&type=Region');
-    // body = await response.json();
-    // this.setState({Leer: this.parseAPIDataToState(body)});
+    response = await fetch('/api/corona/cases?region=Leer&type=Region');
+    body = await response.json();
+    this.setState({Leer: this.parseAPIDataToState(body)});
 
-    // response = await fetch('/api/corona/cases?region=germany&type=Country');
-    // body = await response.json();
-    // var germany = this.parseAPIDataToState(body);
-    // germany.R_Wert = body.states[0].R_Wert;
-    // this.setState({Germany: germany});
+    response = await fetch('/api/corona/cases?region=germany&type=Country');
+    body = await response.json();
+    var germany = this.parseAPIDataToState(body);
+    germany.R_Wert = body.states[0].R_Wert;
+    this.setState({Germany: germany});
 
-    // var tmp: TestsVsPositive[] = [];
-    // for (var index = 0; index < 10; ++index) {
-    //   var newTmp = new TestsVsPositive();
-    //   newTmp.yearAndKW = index.toString();
-    //   newTmp.tests = index;
-    //   tmp.push(newTmp);
-    // }
-    // console.log(tmp);
-    // this.setState({TvP: tmp});
 
     // var response = await fetch('/api/corona/tests?number=10');
     // var body = await response.json();
@@ -143,20 +136,20 @@ class CoronaView extends React.Component {
 
 
     return (
-      <div style={{height: '100%'}}>
-        <GridContainer height="20%">
+      <div className="screenView">
+        <GridContainer height="40%">
           <GridItem xs={3}>
             <Card>
               <CardHeader>
                   <h4>{this.state.NDS.name}</h4>
               </CardHeader>
               <CardBody>
-                  <ul>
-                    <li>Fälle gesamt: {this.state.NDS.count} </li>
-                    <li>Wocheninzidenz: {this.state.NDS.weekIncidence} </li>
-                    <li>Fälle pro 100k: {this.state.NDS.casesPer100k} </li>
-                    <li>Tote: {this.state.NDS.deaths} </li>
-                  </ul>
+                  <KeyValueGrid entries={[
+                    {key: 'Fälle gesamt:', value: this.state.NDS.count},
+                    {key: 'Wocheninzidenz:', value: this.state.NDS.weekIncidence},
+                    {key: 'Fälle pro 100k:', value: this.state.NDS.casesPer100k},
+                    {key: 'Tote:', value: this.state.NDS.deaths},
+                  ]} />
               </CardBody>
             </Card>
           </GridItem>
@@ -166,12 +159,12 @@ class CoronaView extends React.Component {
                   <h4>{this.state.HH.name}</h4>
               </CardHeader>
               <CardBody>
-                  <ul>
-                    <li>Fälle gesamt: {this.state.HH.count} </li>
-                    <li>Wocheninzidenz: {this.state.HH.weekIncidence} </li>
-                    <li>Fälle pro 100k: {this.state.HH.casesPer100k} </li>
-                    <li>Tote: {this.state.HH.deaths} </li>
-                  </ul>
+                  <KeyValueGrid entries={[
+                    {key: 'Fälle gesamt:', value: this.state.HH.count},
+                    {key: 'Wocheninzidenz:', value: this.state.HH.weekIncidence},
+                    {key: 'Fälle pro 100k:', value: this.state.HH.casesPer100k},
+                    {key: 'Tote:', value: this.state.HH.deaths},
+                  ]} />
               </CardBody>
             </Card>
           </GridItem>
@@ -181,12 +174,12 @@ class CoronaView extends React.Component {
                   <h4>{this.state.Leer.name}</h4>
               </CardHeader>
               <CardBody>
-                  <ul>
-                    <li>Fälle gesamt: {this.state.Leer.count} </li>
-                    <li>Wocheninzidenz: {this.state.Leer.weekIncidence} </li>
-                    <li>Fälle pro 100k: {this.state.Leer.casesPer100k} </li>
-                    <li>Tote: {this.state.Leer.deaths} </li>
-                  </ul>
+                  <KeyValueGrid entries={[
+                    {key: 'Fälle gesamt:', value: this.state.Leer.count},
+                    {key: 'Wocheninzidenz:', value: this.state.Leer.weekIncidence},
+                    {key: 'Fälle pro 100k:', value: this.state.Leer.casesPer100k},
+                    {key: 'Tote:', value: this.state.Leer.deaths},
+                  ]} />
               </CardBody>
             </Card>
           </GridItem>
@@ -196,18 +189,18 @@ class CoronaView extends React.Component {
                   <h4>{this.state.Germany.name}</h4>
               </CardHeader>
               <CardBody>
-                  <ul>
-                    <li>Fälle gesamt: {this.state.Germany.count} </li>
-                    <li>Wocheninzidenz: {this.state.Germany.R_Wert} </li>
-                    <li>Fälle pro 100k: {this.state.Germany.casesPer100k} </li>
-                    <li>Tote: {this.state.Germany.deaths} </li>
-                  </ul>
+                  <KeyValueGrid entries={[
+                    {key: 'Fälle gesamt:', value: this.state.Germany.count},
+                    {key: 'R-Wert:', value: this.state.Germany.R_Wert},
+                    {key: 'Fälle pro 100k:', value: this.state.Germany.casesPer100k},
+                    {key: 'Tote:', value: this.state.Germany.deaths},
+                  ]} />
               </CardBody>
             </Card>
           </GridItem>
         </GridContainer>
-        <div style={{height: "5%"}}></div>
-        <GridContainer height="60%">
+        <div style={{height: "10%"}}></div>
+        <GridContainer height="50%">
           <GridItem xs={6}>
             <Graph lines = {[testLine]}/>
           </GridItem>

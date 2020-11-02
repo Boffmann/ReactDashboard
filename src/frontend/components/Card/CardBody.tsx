@@ -11,7 +11,7 @@ const useStyles = makeStyles({
     cardBody: {
         position: "absolute",
         top: "40%",
-        left: "0px",
+        left: "10%",
         textAlign: "left",
         width: '100%',
         height: '30%'

@@ -9,9 +9,7 @@ function App() {
     return (
       <div className="App">
           <Navigation />
-          <div className="content">
-            <CoronaView />
-          </div>
+          <CoronaView />
       </div>
     );
 }

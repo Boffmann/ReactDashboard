@@ -1,6 +1,7 @@
 import React from 'react';
 import Chart from 'chart.js'
 import GraphLine from './GraphLine'
+import './Graph.css';
 
 interface GraphProps {
     lines: GraphLine[]
@@ -76,7 +77,7 @@ export default class Graph extends React.Component {
 
         return (
             <canvas
-                style={{height: '100%', width: '100%'}}
+                className="graph"
                 // id="myChart"
                 ref={this.chartRef}
             />
