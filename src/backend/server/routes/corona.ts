@@ -53,7 +53,6 @@ async function getCasesPerRegion(region: string): Promise<State> {
         //(Landkreis = 'LK Leer' OR Landkreis = 'SK Flensburg') AND Meldedatum >= '20201025 00:00:00.000'
         const response = await axios.get(url);
         const apiData: APIDataRegion = response.data;
-        console.log(url);
 
         if (apiData.features.length !== 0) {
             const feature = apiData.features[0];
@@ -311,8 +310,8 @@ router.get('/cases/previous', async function(req: Request, res: Response) {
 })
 
 router.get('/test', async function(req: Request, res: Response) {
-    await getRValueForGermany();
-    res.json({success: true});
+    const r = await getRValueForGermany();
+    res.json({success: true, R: r});
 })
 
 module.exports = router

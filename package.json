@@ -33,7 +33,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "compile": "tsc --esModuleInterop -p tsconfig.server.json && node ./src/backend/server/server.js",
-    "dev": "nodemon -e ts --exec \"npm run compile\""
+    "dev": "/usr/local/bin/nodemon -e ts --exec \"npm run compile\""
   },
   "eslintConfig": {
     "extends": "react-app"

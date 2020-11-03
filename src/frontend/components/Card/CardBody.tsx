@@ -13,7 +13,7 @@ const useStyles = makeStyles({
         top: "40%",
         left: "10%",
         textAlign: "left",
-        width: '100%',
+        width: '90%',
         height: '30%'
     }
 });

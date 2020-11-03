@@ -8,6 +8,7 @@ import KeyValueGrid from '../components/Card/KeyValueGrid'
 import Graph from '../components/Graph/Graph'
 import State from '../../common/state'
 import GraphLine from '../components/Graph/GraphLine'
+import { timestampToDate } from '../../common/TimeFormater'
 import '../app/App.css'
 
 class TestsVsPositive {
@@ -46,6 +47,7 @@ class CoronaView extends React.Component {
   private parseAPIDataToState(data: any): State {
       var newState = new State();
 
+      newState.timestamp = data.states[0].timestamp;
       newState.name = data.states[0].name;
       newState.count = data.states[0].count;
       newState.difference = data.states[0].difference;
@@ -123,6 +125,9 @@ class CoronaView extends React.Component {
   
   render() {
 
+    const updateDate = timestampToDate(this.state.Germany.timestamp);
+    const updated = updateDate.toLocaleDateString() + " " + updateDate.toLocaleTimeString();
+
     const testLine = new GraphLine(
         this.state.TvP.yearAndKW,
         this.state.TvP.tests,
@@ -199,7 +204,7 @@ class CoronaView extends React.Component {
             </Card>
           </GridItem>
         </GridContainer>
-        <div style={{height: "10%"}}></div>
+        <div style={{height: "5%"}}></div>
         <GridContainer height="50%">
           <GridItem xs={6}>
             <Graph lines = {[testLine]}/>
@@ -208,6 +213,9 @@ class CoronaView extends React.Component {
             <Graph lines = {[positiveLine]}/>
           </GridItem>
         </GridContainer>
+        <div style={{height: "5%", color: '#FFFFFF'}}>
+          Last updated: {updated}
+        </div>
       </div>
     );
   }

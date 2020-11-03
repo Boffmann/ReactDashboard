@@ -19,6 +19,10 @@ export function getLastMidnightTimestamp(): number {
     return Date.parse(dateString);
 }
 
+export function timestampToDate(timestamp: number): Date {
+    return new Date(timestamp);
+}
+
 export function germanDateFormatToTimestamp(dateFormat: string): number | null {
 
     const germanDateMatch = dateFormat.match(/(\d){2}.(\d){2}.(\d){4}/);
