@@ -15,11 +15,13 @@ class TestsVsPositive {
   public yearAndKW: string[];
   public tests: number[];
   public positive: number[];
+  public ratio: number[];
 
   constructor() {
     this.yearAndKW = [];
     this.tests = [];
     this.positive = [];
+    this.ratio = [];
   }
 }
 
@@ -69,6 +71,7 @@ class CoronaView extends React.Component {
       TvP.yearAndKW.push(test.kw);
       TvP.tests.push(test.number);
       TvP.positive.push(test.positive);
+      TvP.ratio.push(test.ratio);
     }
 
     return TvP;
@@ -95,9 +98,9 @@ class CoronaView extends React.Component {
     this.setState({Germany: germany});
 
 
-    // var response = await fetch('/api/corona/tests?number=10');
-    // var body = await response.json();
-    // this.setState({TvP: this.parseAPIDataToTestsVsPositive(body)});
+    var response = await fetch('/api/corona/tests?number=10');
+    var body = await response.json();
+    this.setState({TvP: this.parseAPIDataToTestsVsPositive(body)});
 
   }
 
@@ -107,7 +110,8 @@ class CoronaView extends React.Component {
     var tvp = new TestsVsPositive();
     tvp.yearAndKW = ["1", "2", "3", "4", "5", "6", "7"];
     tvp.tests = [10000, 250000, 300000, 40000, 5000000, 560000, 910000];
-    tvp.positive = [1, 2, 3, 4, 5, 6, 7];
+    tvp.positive = [1000, 200, 3000, 400000, 5000, 600, 70];
+    tvp.ratio = [5.123, 17.987, 13.0, 40.12, 11.123, 15.123, 18.123];
     
     this.setState({TvP: tvp});
   }
@@ -137,6 +141,11 @@ class CoronaView extends React.Component {
         this.state.TvP.yearAndKW,
         this.state.TvP.positive,
         "Positive"
+    )
+    const ratioLine = new GraphLine(
+        this.state.TvP.yearAndKW,
+        this.state.TvP.ratio,
+        "TestPositiveRatio"
     )
 
 
@@ -207,10 +216,10 @@ class CoronaView extends React.Component {
         <div style={{height: "5%"}}></div>
         <GridContainer height="50%">
           <GridItem xs={6}>
-            <Graph lines = {[testLine]}/>
+            <Graph lines = {[testLine, positiveLine]}/>
           </GridItem>
           <GridItem xs={6}>
-            <Graph lines = {[positiveLine]}/>
+            <Graph lines = {[ratioLine]}/>
           </GridItem>
         </GridContainer>
         <div style={{height: "5%", color: '#FFFFFF'}}>
