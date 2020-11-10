@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 interface KeyValue {
     key: (string|number);
     value: (string|number);
+    difference?: (string|number);
 };
 
 interface Props {
@@ -27,13 +28,30 @@ class KeyValueGrid extends React.Component {
 
     renderTableData() {
         return this.props.entries.map((entry) => {
-            const { key, value } = entry;
-            return (
-                <tr>
-                    <td>{key}</td>
-                    <td>{value}</td>
-                </tr>
-            )
+            const { key, value, difference } = entry;
+            if (difference !== undefined) {
+
+                // TODO Grovebox colors
+                const differenceColor = (difference > 0) ? 'red' : 'green';
+                const sign = (difference > 0) ? "+" : "";
+
+                return (
+                    <tr>
+                        <td>{key}</td>
+                        <td>
+                            {value}
+                            <span style={{color: differenceColor, paddingLeft: '0.5rem'}}>({sign + "" + difference})</span>
+                        </td>
+                    </tr>
+                )
+            } else {
+                return (
+                    <tr>
+                        <td>{key}</td>
+                        <td>{value}</td>
+                    </tr>
+                )
+            }
         })
     }
 

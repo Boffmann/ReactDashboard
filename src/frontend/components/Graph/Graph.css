@@ -1,5 +1,6 @@
 .graph {
     width: 100%;
+    max-width: 50vw;
     height: 100%;
     padding-right: 2vw;
     padding-left: 2vw;

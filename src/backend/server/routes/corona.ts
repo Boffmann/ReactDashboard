@@ -130,7 +130,7 @@ async function getCasesForGermany(): Promise<State> {
             }
 
             const RValue = await getRValueForGermany();
-            res_state.R_Wert = RValue;
+            res_state.RValue = RValue;
 
             res_state.casesPer100k = (res_state.count / inhabitantsGermany) * 100000;
         }
@@ -306,7 +306,7 @@ router.get('/cases/previous', async function(req: Request, res: Response) {
             result.push(item)
     });
     
-    res.json({result: result});
+    res.json({states: result});
 })
 
 router.get('/test', async function(req: Request, res: Response) {

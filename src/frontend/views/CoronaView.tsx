@@ -40,9 +40,13 @@ class CasesVsDeath {
 class CoronaView extends React.Component {
   state = {
     Leer: new State(),
+    Leer_Previous: new State(),
     NDS: new State(),
+    NDS_Previous: new State(),
     HH: new State(),
+    HH_Previous: new State(),
     Germany: new State(),
+    Germany_Previous: new State(),
     TvP: new TestsVsPositive()
   };
 
@@ -78,10 +82,25 @@ class CoronaView extends React.Component {
   }
 
   private async updateData() {
-    var response = await fetch('/api/corona/cases?region=Niedersachsen&type=State');
+    var response = await fetch('/api/corona/cases/previous?region=Niedersachsen&number=1');
     var body = await response.json();
-    this.setState({NDS: this.parseAPIDataToState(body)});
+    this.setState({NDS_Previous: this.parseAPIDataToState(body)});
 
+    var response = await fetch('/api/corona/cases/previous?region=Hamburg&number=1');
+    var body = await response.json();
+    this.setState({HH_Previous: this.parseAPIDataToState(body)});
+
+    var response = await fetch('/api/corona/cases/previous?region=LK%20Leer&number=1');
+    var body = await response.json();
+    this.setState({Leer_Previous: this.parseAPIDataToState(body)});
+
+    var response = await fetch('/api/corona/cases/previous?region=Deutschland&number=1');
+    var body = await response.json();
+    this.setState({Germany_Previous: this.parseAPIDataToState(body)});
+
+    response = await fetch('/api/corona/cases?region=Niedersachsen&type=State');
+    body = await response.json();
+    this.setState({NDS: this.parseAPIDataToState(body)});
 
     response = await fetch('/api/corona/cases?region=Hamburg&type=State');
     body = await response.json();
@@ -94,18 +113,17 @@ class CoronaView extends React.Component {
     response = await fetch('/api/corona/cases?region=germany&type=Country');
     body = await response.json();
     var germany = this.parseAPIDataToState(body);
-    germany.R_Wert = body.states[0].R_Wert;
+    germany.RValue = body.states[0].RValue;
     this.setState({Germany: germany});
 
-
-    var response = await fetch('/api/corona/tests?number=10');
-    var body = await response.json();
-    this.setState({TvP: this.parseAPIDataToTestsVsPositive(body)});
+    // var response = await fetch('/api/corona/tests?number=10');
+    // var body = await response.json();
+    // this.setState({TvP: this.parseAPIDataToTestsVsPositive(body)});
 
   }
 
   componentDidMount() {
-    // this.updateData();
+    this.updateData();
 
     var tvp = new TestsVsPositive();
     tvp.yearAndKW = ["1", "2", "3", "4", "5", "6", "7"];
@@ -132,6 +150,7 @@ class CoronaView extends React.Component {
     const updateDate = timestampToDate(this.state.Germany.timestamp);
     const updated = updateDate.toLocaleDateString() + " " + updateDate.toLocaleTimeString();
 
+
     const testLine = new GraphLine(
         this.state.TvP.yearAndKW,
         this.state.TvP.tests,
@@ -148,6 +167,8 @@ class CoronaView extends React.Component {
         "TestPositiveRatio"
     )
 
+    // TODO get cases for previous day, calculate difference and provide difference to KeyValueGrid
+
 
     return (
       <div className="screenView">
@@ -159,10 +180,10 @@ class CoronaView extends React.Component {
               </CardHeader>
               <CardBody>
                   <KeyValueGrid entries={[
-                    {key: 'Fälle gesamt:', value: this.state.NDS.count},
-                    {key: 'Wocheninzidenz:', value: this.state.NDS.weekIncidence},
-                    {key: 'Fälle pro 100k:', value: this.state.NDS.casesPer100k},
-                    {key: 'Tote:', value: this.state.NDS.deaths},
+                    {key: 'Fälle gesamt:', value: this.state.NDS.count, difference: this.state.NDS.count - this.state.NDS_Previous.count},
+                    {key: 'Wocheninzidenz:', value: this.state.NDS.weekIncidence, difference: this.state.NDS.weekIncidence - this.state.NDS_Previous.weekIncidence},
+                    {key: 'Fälle pro 100k:', value: this.state.NDS.casesPer100k, difference: this.state.NDS.casesPer100k - this.state.NDS_Previous.casesPer100k},
+                    {key: 'Tote:', value: this.state.NDS.deaths, difference: this.state.NDS.deaths - this.state.NDS_Previous.deaths},
                   ]} />
               </CardBody>
             </Card>
@@ -174,10 +195,10 @@ class CoronaView extends React.Component {
               </CardHeader>
               <CardBody>
                   <KeyValueGrid entries={[
-                    {key: 'Fälle gesamt:', value: this.state.HH.count},
-                    {key: 'Wocheninzidenz:', value: this.state.HH.weekIncidence},
-                    {key: 'Fälle pro 100k:', value: this.state.HH.casesPer100k},
-                    {key: 'Tote:', value: this.state.HH.deaths},
+                    {key: 'Fälle gesamt:', value: this.state.HH.count, difference: this.state.HH.count - this.state.HH_Previous.count},
+                    {key: 'Wocheninzidenz:', value: this.state.HH.weekIncidence, difference: this.state.HH.weekIncidence - this.state.HH_Previous.weekIncidence},
+                    {key: 'Fälle pro 100k:', value: this.state.HH.casesPer100k, difference: this.state.HH.casesPer100k - this.state.HH_Previous.casesPer100k},
+                    {key: 'Tote:', value: this.state.HH.deaths, difference: this.state.HH.deaths - this.state.HH_Previous.deaths},
                   ]} />
               </CardBody>
             </Card>
@@ -189,10 +210,10 @@ class CoronaView extends React.Component {
               </CardHeader>
               <CardBody>
                   <KeyValueGrid entries={[
-                    {key: 'Fälle gesamt:', value: this.state.Leer.count},
-                    {key: 'Wocheninzidenz:', value: this.state.Leer.weekIncidence},
-                    {key: 'Fälle pro 100k:', value: this.state.Leer.casesPer100k},
-                    {key: 'Tote:', value: this.state.Leer.deaths},
+                    {key: 'Fälle gesamt:', value: this.state.Leer.count, difference: this.state.Leer.count - this.state.Leer_Previous.count},
+                    {key: 'Wocheninzidenz:', value: this.state.Leer.weekIncidence, difference: this.state.Leer.weekIncidence - this.state.Leer_Previous.weekIncidence},
+                    {key: 'Fälle pro 100k:', value: this.state.Leer.casesPer100k, difference: this.state.Leer.casesPer100k - this.state.Leer_Previous.casesPer100k},
+                    {key: 'Tote:', value: this.state.Leer.deaths, difference: this.state.Leer.deaths - this.state.Leer_Previous.deaths},
                   ]} />
               </CardBody>
             </Card>
@@ -204,10 +225,10 @@ class CoronaView extends React.Component {
               </CardHeader>
               <CardBody>
                   <KeyValueGrid entries={[
-                    {key: 'Fälle gesamt:', value: this.state.Germany.count},
-                    {key: 'R-Wert:', value: this.state.Germany.R_Wert},
-                    {key: 'Fälle pro 100k:', value: this.state.Germany.casesPer100k},
-                    {key: 'Tote:', value: this.state.Germany.deaths},
+                    {key: 'Fälle gesamt:', value: this.state.Germany.count, difference: this.state.Germany.count - this.state.Germany_Previous.count},
+                    {key: 'R-Wert:', value: this.state.Germany.RValue, difference: this.state.Germany.RValue - this.state.Germany_Previous.RValue},
+                    {key: 'Fälle pro 100k:', value: this.state.Germany.casesPer100k, difference: this.state.Germany.casesPer100k - this.state.Germany_Previous.casesPer100k},
+                    {key: 'Tote:', value: this.state.Germany.deaths, difference: this.state.Germany.deaths - this.state.Germany_Previous.deaths},
                   ]} />
               </CardBody>
             </Card>

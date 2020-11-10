@@ -8,7 +8,7 @@ export default class State {
     public weekIncidence: number;
     public casesPer100k: number;
     public deaths: number;
-    public R_Wert: number;
+    public RValue: number;
 
     constructor() {
         this.timestamp = 0;
@@ -19,6 +19,6 @@ export default class State {
         this.weekIncidence = 0;
         this.casesPer100k = 0;
         this.deaths = 0;
-        this.R_Wert = 0;
+        this.RValue = 0;
     }
 }

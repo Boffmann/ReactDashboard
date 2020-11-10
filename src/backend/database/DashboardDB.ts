@@ -1,7 +1,6 @@
 import { Database } from "sqlite3";
 
 var sqlite3 = require('sqlite3').verbose();
-var mutex = require('node-mutex')();
 
 class DashboardDB {
 
@@ -49,78 +48,53 @@ class DashboardDB {
 
     public DBQuerySET(query: string, args: (string|number)[]): Promise<void> {
         var promise = new Promise<void>((resolve, reject) => {
-            mutex.lock('key', (err: Error, unlock: any) => {
-                if (err) {
-                    console.error(err);
-                    console.error("Unable to aquire lock");
-                    unlock();
-                    reject();
-                    return;
-                }
-
-                this.openDB()
-                    .then((db: Database) => {
-                        db.run(query, args, (err: Error) => {
-                            if (err) {
-                                console.error("Could not set table");
-                                unlock();
-                                this.closeDB(db);
-                                reject(err.message);
-                                return;
-                            }
-                            unlock();
+            this.openDB()
+                .then((db: Database) => {
+                    db.run(query, args, (err: Error) => {
+                        if (err) {
+                            console.error("Could not set table");
                             this.closeDB(db);
-                            resolve();
+                            reject(err.message);
                             return;
-                        });
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        unlock();
-                        reject();
-                    })
+                        }
+                        this.closeDB(db);
+                        resolve();
+                        return;
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    reject();
+                })
             });
-        });
         return promise;
     }
 
     public DBQueryGET(query: string, args: (string|number)[]): Promise<string[]> {
         var promise = new Promise<string[]>((resolve, reject) => {
-            mutex.lock('key', (err: Error, unlock: any) => {
-                if (err) {
-                    console.error(err);
-                    unlock();
-                    reject("Unable to aquire Lock");
-                    return;
-                }
-
-                this.openDB()
-                    .then((db: Database) => {
-                        db.serialize(() => {
-                            db.all(query, args, (err: Error, rows: string[]) => {
-                                if (err) {
-                                    console.log("An error occured during database get");
-                                    console.error(err.message);
-                                    unlock();
-                                    this.closeDB(db);
-                                    reject();
-                                    return;
-                                }
-                                unlock();
-                                console.log("Success getting from database");
+            this.openDB()
+                .then((db: Database) => {
+                    db.serialize(() => {
+                        db.all(query, args, (err: Error, rows: string[]) => {
+                            if (err) {
+                                console.log("An error occured during database get");
+                                console.error(err.message);
                                 this.closeDB(db);
-                                resolve(rows);
+                                reject();
                                 return;
-                            });
+                            }
+                            console.log("Success getting from database");
+                            this.closeDB(db);
+                            resolve(rows);
+                            return;
                         });
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        unlock();
-                        reject();
-                    })
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    reject();
+                })
             });
-        });
         return promise;
     }
 };

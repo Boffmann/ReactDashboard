@@ -19,6 +19,12 @@ export function getLastMidnightTimestamp(): number {
     return Date.parse(dateString);
 }
 
+export function getMidnightTimestampForXDaysBack(days: number): number {
+    var date = new Date();
+    var last = new Date(date.getTime() - (days * 24 * 60 * 60 * 1000));
+    return getTimestampForDate(last.toLocaleDateString())
+}
+
 export function timestampToDate(timestamp: number): Date {
     return new Date(timestamp);
 }
@@ -34,7 +40,6 @@ export function germanDateFormatToTimestamp(dateFormat: string): number | null {
             const day = germanDateString.substr(0, 2);
             const month = germanDateString.substr(3, 2);
             const year = germanDateString.substr(6, 4);
-            console.log("Day: " + day + " Month: " + month + " Year: " + year);
             return Date.parse(month + "/" + day + "/" + year);
         } 
     }

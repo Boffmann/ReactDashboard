@@ -4,17 +4,17 @@ import Test from '../../common/test'
 import { Console } from 'console';
 
 // Get Queries
-const getStateByTimeAndStateQuery = 'SELECT * FROM corona where timestamp = ? AND state = ?';
-const getRecentStatesByStateQuery = 'SELECT * FROM corona where state = ? ORDER BY timestamp DESC LIMIT ?';
+const getStateByTimeAndStateQuery = 'SELECT * FROM corona where timestamp = ? AND name = ?';
+const getRecentStatesByStateQuery = 'SELECT * FROM corona where name = ? ORDER BY timestamp DESC LIMIT ?';
 
 const getTestByYearAndKWQuery = "SELECT * FROM tests where year = ? AND kw = ?";
 
 // Update Queries
-const updateStateAtTimeAndStateQuery = 'UPDATE corona set cases = ?, weekIncidence = ?, casesPer100k = ?, death = ? WHERE timestamp = ? AND state = ?'
+const updateStateAtTimeAndStateQuery = 'UPDATE corona set count = ?, weekIncidence = ?, casesPer100k = ?, deaths = ? WHERE timestamp = ? AND name = ?'
 const updateTestAtYearAndKW = 'UPDATE tests set number = ?, positive = ?, ratio = ?, lab_num = ? WHERE year = ? AND kw = ?'
 
 // Insert Queries
-const insertStateQuery = 'INSERT INTO corona(timestamp, state, cases, weekIncidence, casesPer100k, death, RValue) VALUES(?, ?, ?, ?, ?, ?, ?)';
+const insertStateQuery = 'INSERT INTO corona(timestamp, name, count, weekIncidence, casesPer100k, deaths, RValue) VALUES(?, ?, ?, ?, ?, ?, ?)';
 const insertTestQuery = 'INSERT INTO tests(year, kw, number, positive, ratio, lab_num) VALUES(?, ?, ?, ?, ?, ?)';
 
 // Get Functions
@@ -30,7 +30,7 @@ const Private = {
                 state.weekIncidence,
                 state.casesPer100k,
                 state.deaths,
-                state.R_Wert
+                state.RValue
         ])
         .catch(err => {
             console.log("Error updating Database");
