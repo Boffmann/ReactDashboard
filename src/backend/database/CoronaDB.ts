@@ -1,7 +1,6 @@
 import Database from './DashboardDB'
 import State from '../../common/state'
 import Test from '../../common/test'
-import { Console } from 'console';
 
 // Get Queries
 const getStateByTimeAndStateQuery = 'SELECT * FROM corona where timestamp = ? AND name = ?';

@@ -26,8 +26,18 @@ export default class Graph extends React.Component {
         var labels: any
         var datasets: any[] = []
 
+        if (lines.length === 0) {
+            return
+        }
+
         for (var index = 0; index < Math.min(lines.length, GraphColors.length); ++index) {
             const graphLine = lines[index];
+
+            // Do not show lines that do not have the exact same number of values than the very first line has
+            if (graphLine.x_values.length !== lines[0].x_values.length) {
+                continue;
+            }
+
             if (!labels) {
                 labels = graphLine.x_values;
             }

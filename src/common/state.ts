@@ -21,4 +21,12 @@ export default class State {
         this.deaths = 0;
         this.RValue = 0;
     }
+
+    weekIncidenceRounded(): number {
+        return Math.round(this.weekIncidence * 100) / 100;
+    }
+
+    casesPer100kRounded(): number {
+        return Math.round(this.casesPer100k * 100) / 100;
+    }
 }

@@ -62,6 +62,9 @@ class CoronaView extends React.Component {
       newState.casesPer100k = data.states[0].casesPer100k;
       newState.deaths = data.states[0].deaths;
 
+      newState.weekIncidence = newState.weekIncidenceRounded();
+      newState.casesPer100k = newState.casesPer100kRounded();
+
       return newState;
   }
 
