@@ -126,7 +126,7 @@ class CoronaView extends React.Component {
   }
 
   componentDidMount() {
-    this.updateData();
+    // this.updateData();
 
     var tvp = new TestsVsPositive();
     tvp.yearAndKW = ["1", "2", "3", "4", "5", "6", "7"];

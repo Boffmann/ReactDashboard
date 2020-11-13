@@ -1,8 +1,8 @@
 import axios from 'axios';
-import fs from 'fs';
+import fs, { createWriteStream } from 'fs';
 import { Response, Request } from 'express'
 import cheerio from 'cheerio'
-import xlsxFile from 'read-excel-file/node'
+import ExcelJS from 'exceljs'
 import State from '../../../common/state'
 import Test from '../../../common/test'
 import CoronaDB from '../../database/CoronaDB'
@@ -146,33 +146,34 @@ function parseRKITestFile(): Promise<Test[]> {
     var year: number = 1970;
     var tests: Test[] = [];
 
-    var promise = new Promise<Test[]>((resolve, reject) => {
-        xlsxFile(xlsxFilePath, {sheet: 'Testzahlen'})
-            .then ((rows: string[][]) => {
-                console.log("Parse XLSX");
+    var promise = new Promise<Test[]>(async (resolve, reject) => {
 
-                const yearMatch = rows[0][0].match(/(\d){4}/);
-                if (yearMatch) {
-                    year = parseInt(yearMatch[0]);
-                }
-                
-                for (var row = 2; row < rows.length - 1; ++row) {
-                    const test: Test = {
-                        year: year,
-                        kw: parseInt(rows[row][0]),
-                        number: parseInt(rows[row][1]),
-                        positive: parseInt(rows[row][2]),
-                        ratio: parseFloat(rows[row][3]),
-                        lab_num: parseInt(rows[row][4]),
-                    };
-                    tests.push(test);
-                }
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(xlsxFilePath);
+        const worksheet = workbook.getWorksheet("Testzahlen");
+        if (worksheet === null || worksheet === undefined) {
+            reject();
+            return;
+        }
+        console.log("PArsing XLSL");
+        const yearMatch = worksheet.getRow(3).getCell(2).value.toString().match(/(\d){4}/);
+        if (yearMatch) {
+            year = parseInt(yearMatch[0]);
+        }
+        for (var rowIndex = 5; rowIndex < worksheet.rowCount; ++rowIndex) {
+            const row = worksheet.getRow(rowIndex);
+            const test: Test = {
+                year: year,
+                kw: parseInt(row.getCell(2).value.toString()),
+                number: parseInt(row.getCell(3).value.toString()),
+                positive: parseInt(row.getCell(4).value.toString()),
+                ratio: parseFloat(row.getCell(5).result.toString()),
+                lab_num: parseInt(row.getCell(6).value.toString())
+            };
+            tests.push(test);
 
-                resolve(tests);
-            }) .catch((err: Error) => {
-                reject(err);
-            })
-
+            resolve(tests);
+        }
     });
 
     return promise;
@@ -186,8 +187,19 @@ function getNewRKITestFile(): Promise<void> {
             method: 'GET',
             responseType: 'stream'
         }).then((response) => {
-            response.data.pipe(fs.createWriteStream(xlsxFilePath));
-            resolve();
+            const writer = fs.createWriteStream(xlsxFilePath);
+            response.data.pipe(writer);
+            let error = null
+            writer.on('error', err => {
+               error = err;
+               writer.close();
+               reject(err);
+            });
+            writer.on('close', () => {
+                if (!error) {
+                    resolve();
+                }
+            });
         })
         .catch((error: Error) => {
             reject(error);
